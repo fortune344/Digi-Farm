@@ -1,7 +1,12 @@
 import { existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 import { afterAll, describe, expect, it } from "vitest";
+
+// Évite que sharp conserve un handle sur les fichiers lus (sinon rm échoue sous Windows).
+sharp.cache(false);
+
 import {
   deleteListingDir,
   isValidImageFile,
@@ -61,7 +66,8 @@ describe("saveListingPhotos", () => {
     const absolute = path.join(process.cwd(), "public", publicPath);
     expect(existsSync(absolute)).toBe(true);
 
-    const meta = await sharp(absolute).metadata();
+    // Lecture via buffer pour ne pas laisser sharp ouvrir (et verrouiller) le fichier.
+    const meta = await sharp(await readFile(absolute)).metadata();
     expect(meta.format).toBe("webp");
     expect(meta.width).toBe(1280); // 2000 réduit à 1280 (fit inside)
   });

@@ -62,14 +62,15 @@ connexion souvent lente, parfois peu à l'aise avec le numérique. Langue : fran
 
 ## Ce qui a été décidé
 (Mettre à jour à chaque session — garder les 5 décisions les plus récentes.)
-- **Phase 2 terminée** : CRUD annonces côté agriculteur (table `listings`), upload **5 photos max**
-  compressées en **WebP ≤1280px** (sharp) dans `public/uploads/listings/<id>/`, tableau de bord vendeur.
-  34 tests verts (dont un test d'intégration sharp réel), build OK.
-- **Photos** : stockées en JSON (chemins) sur `listings.photos` ; fichiers gitignorés (`/public/uploads/*`).
-  Catégories/unités/statuts = constantes (`src/lib/constants.ts`), pas encore de table de référence.
-- **Autorisation annonces** : tout passe par `requireRole("agriculteur")` + vérif propriété
-  (`agriculteurId === user.id`) dans les server actions et pages d'édition. Voir docs/blueprints/autorisation.md.
-- **Auth maison** (Phase 1) : scrypt `node:crypto` ; session = token en cookie httpOnly, SHA-256 stocké en base ;
-  `policy.ts` (pur, testé) + `dal.ts`. **Base = SQLite + Drizzle**, driver **synchrone** (`.get()/.run()`).
-- **Tests** : `server-only` aliasé vers un stub dans `vitest.config.ts` (sinon il lève hors RSC).
-  Design = primitives UI maison style shadcn (palette verte OKLCH), réf. 21st.dev, sans Radix.
+- **Phase 3 terminée** : page d'accueil = **catalogue** (recherche plein-texte titre/description, filtres
+  catégorie+région, tri prix/récence, pagination 12/page) + **fiche produit** `/produits/[id]` (galerie,
+  infos vendeur + note). Seules les annonces `active` sont publiques. 38 tests verts, build+runtime prod OK.
+- **Requêtes publiques** dans `public-queries.ts` (server-only) ; parsing des query params extrait dans
+  `search-params.ts` (module **pur**, testé). `FilterBar` est client (router.push), le reste est SSR.
+- **Dev vs prod** : un crash worker Turbopack a donné un 500 en *dev* sur `/produits/[id]` ; **OK en prod**
+  (`pnpm build && pnpm start`). Vérifier en prod si un doute en dev. `middleware.ts` est déprécié en Next 16
+  (warning « use proxy ») — à renommer plus tard, fonctionne pour l'instant.
+- **Seed démo** : `node scripts/seed-demo.cjs` insère 1 vendeur + 2 annonces (catalogue non vide) ;
+  `--clean` pour retirer. Données de démo présentes dans la base locale (gitignorée).
+- **Rappels** : auth maison scrypt + sessions SHA-256 ; autorisation côté serveur (pas de RLS) ;
+  SQLite+Drizzle **synchrone** ; UI maison style shadcn (OKLCH, réf. 21st.dev) ; `server-only` aliasé en test.
