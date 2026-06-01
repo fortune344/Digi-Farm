@@ -62,13 +62,14 @@ connexion souvent lente, parfois peu à l'aise avec le numérique. Langue : fran
 
 ## Ce qui a été décidé
 (Mettre à jour à chaque session — garder les 5 décisions les plus récentes.)
-- **Phase 1 terminée** : auth applicative (inscription/connexion/profil), tables users/profiles/sessions,
-  rôles agriculteur/acheteur, middleware + DAL de protection. 17 tests verts, build OK.
-- **Auth maison** : mot de passe haché via `node:crypto` scrypt (zéro dép. native) ; session =
-  token aléatoire en cookie httpOnly, dont le **SHA-256** est stocké en base ; renouvellement glissant.
-- **Autorisation** centralisée dans `src/lib/auth/` : `policy.ts` (pur, testé : interdit l'auto-inscription
-  admin, rejette les rôles non autorisés) + `dal.ts` (`getCurrentUser`/`requireUser`/`requireRole`).
-- **Design** : primitives UI maison style shadcn dans `src/components/ui` (palette verte, tokens OKLCH,
-  mobile-first), réf. 21st.dev. Pas de dépendance Radix pour l'instant.
-- **Base = SQLite + Drizzle** ; **Supabase abandonné** ; **Next.js 16.2.6**. Driver better-sqlite3 **synchrone**
-  (requêtes en `.get()/.run()` sans await).
+- **Phase 2 terminée** : CRUD annonces côté agriculteur (table `listings`), upload **5 photos max**
+  compressées en **WebP ≤1280px** (sharp) dans `public/uploads/listings/<id>/`, tableau de bord vendeur.
+  34 tests verts (dont un test d'intégration sharp réel), build OK.
+- **Photos** : stockées en JSON (chemins) sur `listings.photos` ; fichiers gitignorés (`/public/uploads/*`).
+  Catégories/unités/statuts = constantes (`src/lib/constants.ts`), pas encore de table de référence.
+- **Autorisation annonces** : tout passe par `requireRole("agriculteur")` + vérif propriété
+  (`agriculteurId === user.id`) dans les server actions et pages d'édition. Voir docs/blueprints/autorisation.md.
+- **Auth maison** (Phase 1) : scrypt `node:crypto` ; session = token en cookie httpOnly, SHA-256 stocké en base ;
+  `policy.ts` (pur, testé) + `dal.ts`. **Base = SQLite + Drizzle**, driver **synchrone** (`.get()/.run()`).
+- **Tests** : `server-only` aliasé vers un stub dans `vitest.config.ts` (sinon il lève hors RSC).
+  Design = primitives UI maison style shadcn (palette verte OKLCH), réf. 21st.dev, sans Radix.

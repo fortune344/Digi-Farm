@@ -15,6 +15,16 @@ export async function SiteHeader() {
         <nav className="flex items-center gap-2">
           {user ? (
             <>
+              {user.profile.role === "agriculteur" && (
+                <Link
+                  href="/tableau-de-bord"
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "sm" }),
+                  )}
+                >
+                  Mes annonces
+                </Link>
+              )}
               <Link
                 href="/profil"
                 className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}

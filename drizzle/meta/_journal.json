@@ -8,6 +8,13 @@
       "when": 1780354964773,
       "tag": "0000_noisy_black_crow",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1780356082444,
+      "tag": "0001_mighty_wolfsbane",
+      "breakpoints": true
     }
   ]
 }
