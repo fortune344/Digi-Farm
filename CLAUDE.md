@@ -62,10 +62,13 @@ connexion souvent lente, parfois peu à l'aise avec le numérique. Langue : fran
 
 ## Ce qui a été décidé
 (Mettre à jour à chaque session — garder les 5 décisions les plus récentes.)
-- **Phase 0 terminée** : projet Next.js 16 + SQLite/Drizzle + Biome + vitest opérationnel ;
-  typecheck/lint/test/build passent tous. Versions figées (voir section Stack).
-- **Next.js 16.2.6** retenu (et non 15 du brief) : c'est la version stable actuelle, App Router identique.
-- **Base = SQLite + Drizzle ORM** ; **Supabase abandonné** → auth + stockage gérés par l'app,
-  **plus de RLS** → autorisation 100% côté serveur (docs/blueprints/autorisation.md).
-- **Design** : viser un UI soigné type shadcn/ui + animations (réf. 21st.dev), dès les phases UI.
-- Nom du projet figé : **Digi-Farm** (anciennement « AgriLien » dans le brief).
+- **Phase 1 terminée** : auth applicative (inscription/connexion/profil), tables users/profiles/sessions,
+  rôles agriculteur/acheteur, middleware + DAL de protection. 17 tests verts, build OK.
+- **Auth maison** : mot de passe haché via `node:crypto` scrypt (zéro dép. native) ; session =
+  token aléatoire en cookie httpOnly, dont le **SHA-256** est stocké en base ; renouvellement glissant.
+- **Autorisation** centralisée dans `src/lib/auth/` : `policy.ts` (pur, testé : interdit l'auto-inscription
+  admin, rejette les rôles non autorisés) + `dal.ts` (`getCurrentUser`/`requireUser`/`requireRole`).
+- **Design** : primitives UI maison style shadcn dans `src/components/ui` (palette verte, tokens OKLCH,
+  mobile-first), réf. 21st.dev. Pas de dépendance Radix pour l'instant.
+- **Base = SQLite + Drizzle** ; **Supabase abandonné** ; **Next.js 16.2.6**. Driver better-sqlite3 **synchrone**
+  (requêtes en `.get()/.run()` sans await).
