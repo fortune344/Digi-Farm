@@ -12,7 +12,7 @@ export function Select({
     <div className="relative">
       <select
         className={cn(
-          "flex h-11 w-full appearance-none rounded-md border border-input bg-background px-3 py-2 pr-9 text-base shadow-sm transition-colors",
+          "flex h-11 w-full appearance-none rounded-xl border border-input bg-card px-3.5 py-2 pr-9 text-base shadow-sm transition-colors",
           "focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           "disabled:cursor-not-allowed disabled:opacity-50",
           "aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive/30",

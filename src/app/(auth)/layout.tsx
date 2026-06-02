@@ -28,7 +28,7 @@ export default async function AuthLayout({
 }) {
   // Un utilisateur déjà connecté n'a rien à faire sur inscription/connexion.
   const user = await getCurrentUser();
-  if (user) redirect("/profil");
+  if (user) redirect("/tableau-de-bord");
 
   return (
     <div className="grid min-h-dvh lg:grid-cols-2">

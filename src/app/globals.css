@@ -28,36 +28,41 @@
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces);
+
+  /* Easing « soft » premium (taste-skill). */
+  --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.9rem;
 
-  /* Palette agricole : verts profonds, fonds clairs et chauds. */
-  --background: oklch(0.99 0.006 145);
-  --foreground: oklch(0.22 0.03 152);
+  /* Editorial luxury : crème chaud, vert sauge, espresso. */
+  --background: oklch(0.985 0.007 83);
+  --foreground: oklch(0.28 0.02 75);
 
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.03 152);
+  --card-foreground: oklch(0.28 0.02 75);
 
-  --primary: oklch(0.55 0.15 149);
-  --primary-foreground: oklch(0.99 0.01 145);
+  --primary: oklch(0.5 0.11 150);
+  --primary-foreground: oklch(0.99 0.01 90);
 
-  --secondary: oklch(0.96 0.02 150);
-  --secondary-foreground: oklch(0.3 0.04 152);
+  --secondary: oklch(0.95 0.02 140);
+  --secondary-foreground: oklch(0.32 0.04 150);
 
-  --muted: oklch(0.97 0.01 150);
-  --muted-foreground: oklch(0.53 0.03 150);
+  --muted: oklch(0.96 0.008 83);
+  --muted-foreground: oklch(0.5 0.02 75);
 
-  --accent: oklch(0.95 0.05 150);
-  --accent-foreground: oklch(0.3 0.06 152);
+  --accent: oklch(0.94 0.04 145);
+  --accent-foreground: oklch(0.34 0.05 150);
 
-  --destructive: oklch(0.58 0.22 27);
+  --destructive: oklch(0.58 0.2 27);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.92 0.01 150);
-  --input: oklch(0.91 0.01 150);
-  --ring: oklch(0.55 0.15 149);
+  /* Hairlines discrètes (pas de gris générique). */
+  --border: oklch(0.9 0.008 80);
+  --input: oklch(0.89 0.008 80);
+  --ring: oklch(0.5 0.11 150);
 }
 
 * {
@@ -73,9 +78,44 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 ::selection {
   background-color: var(--color-accent);
   color: var(--color-accent-foreground);
+}
+
+/* Entrée douce : translation + flou + fondu, easing premium. */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.8s var(--ease-soft) both;
+}
+
+.delay-1 {
+  animation-delay: 0.08s;
+}
+.delay-2 {
+  animation-delay: 0.16s;
+}
+.delay-3 {
+  animation-delay: 0.24s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up {
+    animation: none;
+  }
 }

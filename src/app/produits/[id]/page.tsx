@@ -5,11 +5,13 @@ import { notFound } from "next/navigation";
 import { PhotoGallery } from "@/components/listings/photo-gallery";
 import { StatutBadge } from "@/components/listings/statut-badge";
 import { SiteHeader } from "@/components/site-header";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Stars } from "@/components/ui/stars";
+import { getCurrentUser } from "@/lib/auth/dal";
 import { formatFCFA, formatStock } from "@/lib/format";
 import { getPublicListingById } from "@/lib/listings/public-queries";
+import { cn } from "@/lib/utils";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -26,6 +28,7 @@ export default async function ProduitPage({ params }: Props) {
   const data = getPublicListingById(id);
   if (!data) notFound();
 
+  const user = await getCurrentUser();
   const { listing, seller } = data;
   const epuise = listing.statut === "epuisee";
 
@@ -108,13 +111,37 @@ export default async function ProduitPage({ params }: Props) {
             </Card>
 
             <div className="mt-6">
-              <Button className="w-full" size="lg" disabled>
-                {epuise ? "Produit épuisé" : "Commander"}
-              </Button>
-              {!epuise && (
-                <p className="mt-2 text-center text-xs text-muted-foreground">
-                  La commande et le paiement sécurisé arrivent très bientôt.
-                </p>
+              {epuise ? (
+                <Button className="w-full" size="lg" disabled>
+                  Produit épuisé
+                </Button>
+              ) : user ? (
+                <>
+                  <Button className="w-full" size="lg" disabled>
+                    Commander
+                  </Button>
+                  <p className="mt-2 text-center text-xs text-muted-foreground">
+                    La commande et le paiement séquestré arrivent très bientôt.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/connexion"
+                    className={cn(buttonVariants({ size: "lg" }), "w-full")}
+                  >
+                    Se connecter pour commander
+                  </Link>
+                  <p className="mt-2 text-center text-xs text-muted-foreground">
+                    Pas encore de compte ?{" "}
+                    <Link
+                      href="/inscription"
+                      className="font-medium text-primary hover:underline"
+                    >
+                      Créer un compte
+                    </Link>
+                  </p>
+                </>
               )}
             </div>
           </div>

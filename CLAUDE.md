@@ -62,15 +62,17 @@ connexion souvent lente, parfois peu à l'aise avec le numérique. Langue : fran
 
 ## Ce qui a été décidé
 (Mettre à jour à chaque session — garder les 5 décisions les plus récentes.)
-- **Phase 3 terminée** : page d'accueil = **catalogue** (recherche plein-texte titre/description, filtres
-  catégorie+région, tri prix/récence, pagination 12/page) + **fiche produit** `/produits/[id]` (galerie,
-  infos vendeur + note). Seules les annonces `active` sont publiques. 38 tests verts, build+runtime prod OK.
-- **Requêtes publiques** dans `public-queries.ts` (server-only) ; parsing des query params extrait dans
-  `search-params.ts` (module **pur**, testé). `FilterBar` est client (router.push), le reste est SSR.
-- **Dev vs prod** : un crash worker Turbopack a donné un 500 en *dev* sur `/produits/[id]` ; **OK en prod**
-  (`pnpm build && pnpm start`). Vérifier en prod si un doute en dev. `middleware.ts` est déprécié en Next 16
-  (warning « use proxy ») — à renommer plus tard, fonctionne pour l'instant.
-- **Seed démo** : `node scripts/seed-demo.cjs` insère 1 vendeur + 2 annonces (catalogue non vide) ;
-  `--clean` pour retirer. Données de démo présentes dans la base locale (gitignorée).
-- **Rappels** : auth maison scrypt + sessions SHA-256 ; autorisation côté serveur (pas de RLS) ;
-  SQLite+Drizzle **synchrone** ; UI maison style shadcn (OKLCH, réf. 21st.dev) ; `server-only` aliasé en test.
+- **Refonte design + architecture (sur retour utilisateur)** : `/` = **landing éditoriale** (hero, étapes,
+  produits en vedette, CTA), **catalogue déplacé sur `/marche`** (recherche+filtres+pagination 12/page).
+  Fiche produit `/produits/[id]`. 38 tests, build+runtime prod OK.
+- **Design = taste-skill / variante « soft » (editorial luxury)** : palette **crème chaud + vert sauge +
+  espresso** (OKLCH), titres en **Fraunces** (serif éditorial), corps Geist, boutons `rounded-full`,
+  easing `--ease-soft` cubic-bezier(0.32,.72,0,1), ombres douces, `animate-fade-up` (blur+translate). Réf. 21st.dev.
+- **Tableau de bord par rôle** : `/tableau-de-bord` (protégé) rend `SellerDashboard` (gestion annonces) ou
+  `BuyerDashboard` (commandes à venir + compte). Après connexion/inscription → **tout le monde → /tableau-de-bord**.
+  Bouton « Commander » : connecté → placeholder (Phase 4) ; déconnecté → lien connexion.
+- **Seed riche** : `node scripts/seed-demo.cjs` → 3 vendeurs + **25 annonces** avec **visuels générés**
+  (dégradés par catégorie + nom, via sharp/SVG, hors-ligne) dans public/uploads (gitignoré) ; `--clean` pour retirer.
+- **Rappels** : auth scrypt + sessions SHA-256 ; autorisation serveur (pas de RLS) ; SQLite+Drizzle **synchrone** ;
+  `server-only` aliasé en test ; `middleware.ts` déprécié Next 16 (à renommer `proxy` plus tard) ;
+  crash worker Turbopack possible en *dev* sur routes DB → vérifier en **prod**.

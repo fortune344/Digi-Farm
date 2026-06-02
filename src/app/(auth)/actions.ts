@@ -72,7 +72,7 @@ export async function signupAction(
 
   const token = createSession(userId);
   await setSessionCookie(token);
-  redirect("/profil");
+  redirect("/tableau-de-bord");
 }
 
 export async function loginAction(
@@ -106,5 +106,5 @@ export async function loginAction(
 
   const token = createSession(user.id);
   await setSessionCookie(token);
-  redirect("/profil");
+  redirect("/tableau-de-bord");
 }

@@ -12,7 +12,7 @@ function hrefFor(params: SearchParams, page: number): string {
   if (params.sort !== "recent") query.set("sort", params.sort);
   if (page > 1) query.set("page", String(page));
   const qs = query.toString();
-  return qs ? `/?${qs}` : "/";
+  return qs ? `/marche?${qs}` : "/marche";
 }
 
 export function Pagination({
