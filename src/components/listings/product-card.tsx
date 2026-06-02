@@ -2,7 +2,7 @@ import { ImageOff, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Stars } from "@/components/ui/stars";
-import { formatFCFA, formatQuantite } from "@/lib/format";
+import { formatFCFA } from "@/lib/format";
 import type { PublicListing } from "@/lib/listings/public-queries";
 
 export function ProductCard({ listing, seller }: PublicListing) {
@@ -38,7 +38,7 @@ export function ProductCard({ listing, seller }: PublicListing) {
         <p className="text-lg font-bold text-primary">
           {formatFCFA(listing.prix)}
           <span className="ml-1 text-xs font-normal text-muted-foreground">
-            {formatQuantite(listing.quantiteDispo, listing.unite)}
+            / {listing.unite}
           </span>
         </p>
 

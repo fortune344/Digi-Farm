@@ -5,7 +5,7 @@ import { DeleteListingButton } from "@/components/listings/delete-listing-button
 import { StatutBadge } from "@/components/listings/statut-badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { formatFCFA, formatQuantite } from "@/lib/format";
+import { formatFCFA, formatStock } from "@/lib/format";
 import { getListingsByOwner } from "@/lib/listings/queries";
 import { cn } from "@/lib/utils";
 
@@ -82,10 +82,14 @@ export function SellerDashboard({
                   {listing.categorie} · {listing.region}
                 </p>
                 <p className="mt-1 font-semibold text-primary">
-                  {formatFCFA(listing.prix)}{" "}
+                  {formatFCFA(listing.prix)}
                   <span className="text-sm font-normal text-muted-foreground">
-                    {formatQuantite(listing.quantiteDispo, listing.unite)}
+                    {" "}
+                    / {listing.unite}
                   </span>
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Stock : {formatStock(listing.quantiteDispo, listing.unite)}
                 </p>
 
                 <div className="mt-3 flex items-center gap-1 border-t pt-3">
