@@ -74,9 +74,10 @@ connexion souvent lente, parfois peu à l'aise avec le numérique. Langue : fran
 - **Tableau de bord par rôle** : `/tableau-de-bord` (protégé) rend `SellerDashboard` ou `BuyerDashboard`.
   Connexion/inscription → **tout le monde → /tableau-de-bord**. « Commander » : connecté → placeholder
   (Phase 4) ; déconnecté → lien connexion.
-- **Seed riche** : `node scripts/seed-demo.cjs` → 3 vendeurs + **25 annonces** avec de **vraies photos**
-  téléchargées (LoremFlickr par mot-clé, via curl) compressées WebP ; repli sur visuel généré si échec.
-  `--clean` pour retirer. Fichiers dans public/uploads (gitignoré).
+- **Seed riche** : `node scripts/seed-demo.cjs` → 3 vendeurs + **25 annonces** avec **vraies photos**
+  (Wikimedia Commons : recherche filtrée + **surcharges explicites** `Special:FilePath` pour les cas durs ;
+  LoremFlickr abandonné car non pertinent). `--dry-run` montre les fichiers résolus, `--clean` retire.
+  **Piège** : `next start` indexe `public/` au démarrage → **redémarrer le serveur après un seed**, sinon images 404.
 - **Rappels** : auth scrypt + sessions SHA-256 ; autorisation serveur (pas de RLS) ; SQLite+Drizzle **synchrone** ;
   `server-only` aliasé en test ; `middleware.ts` déprécié Next 16 (à renommer `proxy` plus tard) ;
   crash worker Turbopack possible en *dev* sur routes DB → vérifier en **prod**.
