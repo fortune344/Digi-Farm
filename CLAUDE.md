@@ -62,11 +62,15 @@ connexion souvent lente, parfois peu à l'aise avec le numérique. Langue : fran
 
 ## Ce qui a été décidé
 (Mettre à jour à chaque session — garder les 5 décisions les plus récentes.)
-- **Phase 4 terminée — commande + paiement séquestré** : tables orders/order_items/payments/payment_audit ;
-  tunnel `/commander/[id]` (total recalculé serveur, commission 5%, anti self-buy, stock vérifié) →
-  agrégateur **SIMULÉ** `/paiement/mock/[ref]` → **webhook signé** `/api/paiement/webhook`.
-  Machine à états (`escrow.ts`) : en_attente→collecte→sequestre (PAS de libération auto = Phase 5).
-  51 tests + **test E2E webhook 11/11** (séquestre, idempotence, signature 401, montant 400). `node scripts/test-webhook.cjs`.
+- **Phase 5 terminée — suivi + confirmation de réception → libération** : vendeur marque préparée/expédiée ;
+  acheteur **confirme la réception** → `releaseEscrowOnReception` fait le **PayOut net (total − commission 5%)**,
+  sequestre→**libere**, commande **livree**. **Litige** (`orders.litige_motif`) bloque la libération ;
+  résolution admin = Phase 8. États commande dans `order-status.ts` (pur). Lib auto interdite ailleurs.
+  **64 tests** dont **test d'intégration du flux** (`release-flow.test.ts`) + E2E webhook 11/11 toujours vert.
+- **Phase 4 — commande + paiement séquestré** : orders/order_items/payments/payment_audit ; tunnel
+  `/commander/[id]` (total serveur, commission 5%, anti self-buy, stock) → agrégateur **SIMULÉ**
+  `/paiement/mock/[ref]` → **webhook signé** `/api/paiement/webhook` (HMAC, idempotent, montant vérifié).
+  `escrow.ts` : en_attente→collecte→sequestre. PayOut via `PaymentProvider.payout` (mock). `node scripts/test-webhook.cjs`.
 - **Agrégateur** : interface `PaymentProvider` (`src/lib/payments/provider.ts`) ; impl. mock pour l'instant
   (pas de compte marchand). Brancher CinetPay/FedaPay/Hub2 plus tard = nouvelle impl + schéma de signature réel.
   Secret webhook : `PAYMENT_WEBHOOK_SECRET` (fallback dev si absent).

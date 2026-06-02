@@ -1,7 +1,10 @@
+import { randomUUID } from "node:crypto";
 import type {
   CheckoutParams,
   CheckoutResult,
   PaymentProvider,
+  PayoutParams,
+  PayoutResult,
 } from "./provider";
 
 // Agrégateur SIMULÉ : renvoie vers une page de paiement interne qui, à la
@@ -13,5 +16,11 @@ export class MockPaymentProvider implements PaymentProvider {
 
   createCheckout({ ref }: CheckoutParams): CheckoutResult {
     return { redirectUrl: `/paiement/mock/${ref}` };
+  }
+
+  // Reversement simulé : toujours accepté. Le vrai PayOut appellera l'API
+  // de déboursement de l'agrégateur vers le mobile money de l'agriculteur.
+  payout(_params: PayoutParams): PayoutResult {
+    return { ok: true, payoutRef: `mock-payout-${randomUUID()}` };
   }
 }

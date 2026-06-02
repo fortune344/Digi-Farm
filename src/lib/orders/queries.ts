@@ -14,11 +14,17 @@ import {
 } from "@/db/schema";
 import {
   type ModeLivraison,
+  type OrderStatut,
   PAYMENT_METHODS,
   type SequestreStatut,
 } from "@/lib/constants";
 import { assertTransition } from "@/lib/payments/escrow";
+import { getPaymentProvider } from "@/lib/payments/provider";
+import { canOpenDispute, canTransitionOrder } from "./order-status";
 import { computeCommission, computeTotal } from "./pricing";
+import { planRelease } from "./release";
+
+export type ActionResult = { ok: boolean; message: string };
 
 export type CreateOrderParams = {
   buyerId: string;
@@ -203,4 +209,126 @@ export function processPaymentEvent(params: {
   });
 
   return { ok: true, status: 200, message: "séquestré" };
+}
+
+// --- Phase 5 : suivi, confirmation de réception, litige ---
+
+export function getOrdersBySeller(sellerId: string): OrderSummary[] {
+  return db
+    .select({ order: orders, payment: payments, item: orderItems })
+    .from(orders)
+    .innerJoin(payments, eq(payments.orderId, orders.id))
+    .leftJoin(orderItems, eq(orderItems.orderId, orders.id))
+    .where(eq(orders.agriculteurId, sellerId))
+    .orderBy(desc(orders.createdAt))
+    .all();
+}
+
+/** L'agriculteur fait avancer SA commande (payee→preparee→expediee). */
+export function advanceOrderStatus(
+  orderId: string,
+  sellerId: string,
+  to: OrderStatut,
+): ActionResult {
+  const order = db.select().from(orders).where(eq(orders.id, orderId)).get();
+  if (!order) return { ok: false, message: "Commande introuvable." };
+  if (order.agriculteurId !== sellerId) {
+    return { ok: false, message: "Action non autorisée." };
+  }
+  if (!canTransitionOrder(order.statut, to)) {
+    return {
+      ok: false,
+      message: "Cette action n'est pas possible maintenant.",
+    };
+  }
+  db.update(orders)
+    .set({ statut: to, updatedAt: new Date() })
+    .where(eq(orders.id, orderId))
+    .run();
+  return { ok: true, message: "Statut mis à jour." };
+}
+
+/**
+ * Confirmation de réception par l'acheteur → libération du séquestre :
+ * PayOut du montant net (total − commission) vers l'agriculteur, commande livrée.
+ * Action SERVEUR uniquement. Bloquée si litige. Idempotente (statut vérifié).
+ */
+export function releaseEscrowOnReception(
+  orderId: string,
+  buyerId: string,
+): ActionResult {
+  const detail = getOrderDetail(orderId);
+  if (!detail || !detail.payment) {
+    return { ok: false, message: "Commande introuvable." };
+  }
+  const { order, payment } = detail;
+  if (order.acheteurId !== buyerId) {
+    return { ok: false, message: "Action non autorisée." };
+  }
+
+  const plan = planRelease(order, payment);
+  if (!plan.ok) return { ok: false, message: plan.reason };
+
+  // PayOut réel (ici simulé) vers l'agriculteur.
+  const payout = getPaymentProvider().payout({
+    ref: payment.refAgregateur,
+    amount: plan.net,
+    orderId,
+  });
+  if (!payout.ok) {
+    return { ok: false, message: "Le reversement a échoué, réessayez." };
+  }
+
+  assertTransition("sequestre", "libere");
+  db.transaction((tx) => {
+    tx.insert(paymentAudit)
+      .values({
+        id: randomUUID(),
+        paymentId: payment.id,
+        fromStatut: "sequestre",
+        toStatut: "libere",
+        acteur: "acheteur",
+        montant: plan.net,
+        note: `Réception confirmée — PayOut ${payout.payoutRef ?? ""}`.trim(),
+      })
+      .run();
+    tx.update(payments)
+      .set({ statutSequestre: "libere", updatedAt: new Date() })
+      .where(eq(payments.id, payment.id))
+      .run();
+    tx.update(orders)
+      .set({ statut: "livree", updatedAt: new Date() })
+      .where(eq(orders.id, orderId))
+      .run();
+  });
+
+  return { ok: true, message: "Réception confirmée. Le vendeur a été payé." };
+}
+
+/** Ouvre un litige (acheteur ou vendeur) : bloque la libération du séquestre. */
+export function openDispute(
+  orderId: string,
+  actorUserId: string,
+  motif: string,
+): ActionResult {
+  const order = db.select().from(orders).where(eq(orders.id, orderId)).get();
+  if (!order) return { ok: false, message: "Commande introuvable." };
+  if (order.acheteurId !== actorUserId && order.agriculteurId !== actorUserId) {
+    return { ok: false, message: "Action non autorisée." };
+  }
+  if (!canOpenDispute(order.statut)) {
+    return { ok: false, message: "Impossible d'ouvrir un litige à ce stade." };
+  }
+  db.update(orders)
+    .set({
+      statut: "litige",
+      litigeMotif: motif || null,
+      updatedAt: new Date(),
+    })
+    .where(eq(orders.id, orderId))
+    .run();
+  return {
+    ok: true,
+    message: "Litige ouvert. Un administrateur va l'examiner.",
+  };
 }

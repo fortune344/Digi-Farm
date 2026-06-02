@@ -95,6 +95,7 @@ export const orders = sqliteTable("orders", {
   total: integer("total").notNull(),
   modeLivraison: text("mode_livraison", { enum: MODE_LIVRAISONS }).notNull(),
   adresseLivraison: text("adresse_livraison"),
+  litigeMotif: text("litige_motif"),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),

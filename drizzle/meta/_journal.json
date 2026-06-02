@@ -22,6 +22,13 @@
       "when": 1780383105104,
       "tag": "0002_fuzzy_echo",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1780384332769,
+      "tag": "0003_chunky_grim_reaper",
+      "breakpoints": true
     }
   ]
 }

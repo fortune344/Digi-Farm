@@ -1,0 +1,1 @@
+ALTER TABLE `orders` ADD `litige_motif` text;

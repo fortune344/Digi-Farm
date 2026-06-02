@@ -1,12 +1,15 @@
-import { ImageOff, Pencil, Plus } from "lucide-react";
+import { ImageOff, Inbox, Pencil, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { DeleteListingButton } from "@/components/listings/delete-listing-button";
 import { StatutBadge } from "@/components/listings/statut-badge";
+import { SequestreBadge } from "@/components/orders/sequestre-badge";
 import { buttonVariants } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ORDER_STATUT_LABELS } from "@/lib/constants";
 import { formatFCFA, formatStock } from "@/lib/format";
 import { getListingsByOwner } from "@/lib/listings/queries";
+import { getOrdersBySeller } from "@/lib/orders/queries";
 import { cn } from "@/lib/utils";
 
 export function SellerDashboard({
@@ -18,6 +21,12 @@ export function SellerDashboard({
 }) {
   const listings = getListingsByOwner(userId);
   const actives = listings.filter((l) => l.statut === "active").length;
+  const orders = getOrdersBySeller(userId).filter(
+    (o) => o.order.statut !== "en_attente_paiement",
+  );
+  const aTraiter = orders.filter(
+    (o) => o.order.statut === "payee" || o.order.statut === "preparee",
+  ).length;
 
   return (
     <>
@@ -39,6 +48,53 @@ export function SellerDashboard({
           Nouvelle annonce
         </Link>
       </div>
+
+      {orders.length > 0 && (
+        <Card className="mb-8 rounded-2xl">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Inbox className="size-4 text-primary" />
+              Commandes reçues
+              {aTraiter > 0 && (
+                <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground">
+                  {aTraiter} à traiter
+                </span>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="divide-y">
+              {orders.map(({ order, payment, item }) => (
+                <li key={order.id}>
+                  <Link
+                    href={`/commande/${order.id}`}
+                    className="flex items-center justify-between gap-3 py-3 transition-colors hover:text-primary"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">
+                        {item?.titre ?? "Commande"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {ORDER_STATUT_LABELS[order.statut]}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <SequestreBadge statut={payment.statutSequestre} />
+                      <span className="font-semibold">
+                        {formatFCFA(order.total)}
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      <h2 className="mb-4 font-display text-xl font-semibold tracking-tight">
+        Mes annonces
+      </h2>
 
       {listings.length === 0 ? (
         <Card className="flex flex-col items-center justify-center gap-3 rounded-3xl py-16 text-center">

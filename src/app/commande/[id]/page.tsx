@@ -1,7 +1,15 @@
-import { CheckCircle2, MapPin, ShieldCheck, Truck } from "lucide-react";
+import {
+  CheckCircle2,
+  MapPin,
+  ShieldCheck,
+  TriangleAlert,
+  Truck,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { OrderActions } from "@/components/orders/order-actions";
+import { OrderStepper } from "@/components/orders/order-stepper";
 import { SequestreBadge } from "@/components/orders/sequestre-badge";
 import { SiteHeader } from "@/components/site-header";
 import { buttonVariants } from "@/components/ui/button";
@@ -25,10 +33,9 @@ export default async function CommandePage({
   if (!detail) notFound();
 
   const { order, payment, items } = detail;
-  const isParticipant =
-    user.id === order.acheteurId ||
-    user.id === order.agriculteurId ||
-    user.profile.role === "admin";
+  const isSeller = user.id === order.agriculteurId;
+  const isBuyer = user.id === order.acheteurId;
+  const isParticipant = isSeller || isBuyer || user.profile.role === "admin";
   if (!isParticipant) redirect("/");
 
   const enAttente = payment?.statutSequestre === "en_attente";
@@ -61,6 +68,30 @@ export default async function CommandePage({
         <p className="mt-1 text-sm text-muted-foreground">
           Réf. {order.id.slice(0, 8).toUpperCase()}
         </p>
+
+        {order.statut === "litige" ? (
+          <div className="mt-6 flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm">
+            <TriangleAlert className="mt-0.5 size-5 shrink-0 text-destructive" />
+            <div>
+              <p className="font-medium text-destructive">Litige en cours</p>
+              {order.litigeMotif && (
+                <p className="mt-0.5 text-muted-foreground">
+                  {order.litigeMotif}
+                </p>
+              )}
+              <p className="mt-0.5 text-muted-foreground">
+                Le paiement reste bloqué jusqu'à la décision d'un
+                administrateur.
+              </p>
+            </div>
+          </div>
+        ) : (
+          !enAttente && (
+            <div className="mt-6 rounded-2xl border bg-card p-4">
+              <OrderStepper statut={order.statut} />
+            </div>
+          )
+        )}
 
         <Card className="mt-6 rounded-2xl">
           <CardHeader>
@@ -110,30 +141,39 @@ export default async function CommandePage({
           </CardContent>
         </Card>
 
-        {enAttente && payment ? (
-          <div className="mt-6">
+        <div className="mt-6 space-y-4">
+          {enAttente && payment && isBuyer ? (
             <Link
               href={`/paiement/mock/${payment.refAgregateur}`}
               className={cn(buttonVariants({ size: "lg" }), "w-full")}
             >
               Payer maintenant
             </Link>
-          </div>
-        ) : (
-          <p className="mt-6 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
-            <ShieldCheck className="size-3.5 text-primary" />
-            Le vendeur sera payé après votre confirmation de réception (à
-            venir).
-          </p>
-        )}
+          ) : order.statut === "livree" ? (
+            <p className="flex items-center justify-center gap-1.5 text-center text-sm text-muted-foreground">
+              <ShieldCheck className="size-4 text-primary" />
+              Commande livrée — le paiement a été libéré vers le vendeur.
+            </p>
+          ) : (
+            payment && (
+              <OrderActions
+                orderId={order.id}
+                isSeller={isSeller}
+                isBuyer={isBuyer}
+                statut={order.statut}
+                sequestre={payment.statutSequestre}
+              />
+            )
+          )}
 
-        <div className="mt-6 text-center">
-          <Link
-            href="/tableau-de-bord"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-          >
-            Voir mes commandes
-          </Link>
+          <div className="text-center">
+            <Link
+              href="/tableau-de-bord"
+              className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+            >
+              Retour au tableau de bord
+            </Link>
+          </div>
         </div>
       </main>
     </>

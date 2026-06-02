@@ -8,9 +8,19 @@ export type CheckoutParams = {
 };
 export type CheckoutResult = { redirectUrl: string };
 
+export type PayoutParams = {
+  ref: string;
+  amount: number; // montant net reversé à l'agriculteur (total − commission)
+  orderId: string;
+};
+export type PayoutResult = { ok: boolean; payoutRef?: string };
+
 export interface PaymentProvider {
   readonly name: string;
+  /** PayIn : encaisse le paiement de l'acheteur. */
   createCheckout(params: CheckoutParams): CheckoutResult;
+  /** PayOut : reverse les fonds à l'agriculteur (libération du séquestre). */
+  payout(params: PayoutParams): PayoutResult;
 }
 
 // Sélection de l'agrégateur de paiement.
