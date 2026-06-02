@@ -1,17 +1,21 @@
-// Seed de démonstration : peuple le catalogue avec des produits réalistes et
-// génère un visuel de marque (dégradé + nom) par produit, hors-ligne via sharp.
+// Seed de démonstration : peuple le catalogue avec des produits réalistes.
+// Télécharge de VRAIES photos (par mot-clé, via LoremFlickr + curl) et les
+// compresse en WebP ; repli sur un visuel généré si un téléchargement échoue.
 // Usage : node scripts/seed-demo.cjs [--clean]
 const path = require("node:path");
 const fs = require("node:fs");
+const os = require("node:os");
+const { execFileSync } = require("node:child_process");
 const { randomUUID } = require("node:crypto");
 const Database = require("better-sqlite3");
 const sharp = require("sharp");
+
+sharp.cache(false); // évite les verrous de fichiers sous Windows
 
 const ROOT = process.cwd();
 const db = new Database(path.join(ROOT, "data", "digifarm.db"));
 db.pragma("foreign_keys = ON");
 
-// Vendeurs de démo (emails dédiés pour ne jamais toucher aux vrais comptes).
 const SELLERS = [
   {
     email: "demo.adjo@digifarm.test",
@@ -36,7 +40,6 @@ const SELLERS = [
   },
 ];
 
-// Toujours repartir propre.
 const uploadsRoot = path.join(ROOT, "public", "uploads", "listings");
 for (const s of SELLERS) {
   const u = db.prepare("SELECT id FROM users WHERE email = ?").get(s.email);
@@ -49,7 +52,6 @@ for (const s of SELLERS) {
   }
   db.prepare("DELETE FROM users WHERE email = ?").run(s.email);
 }
-// Nettoie aussi l'ancien email de démo s'il existe.
 db.prepare("DELETE FROM users WHERE email = ?").run(
   "demo.vendeur@digifarm.test",
 );
@@ -59,7 +61,7 @@ if (process.argv.includes("--clean")) {
   process.exit(0);
 }
 
-// Couleurs de dégradé par catégorie (rendu fiable, sans dépendre de photos).
+// --- Visuel généré (repli hors-ligne) ---
 const THEME = {
   Céréales: ["#ca8a04", "#713f12"],
   Légumes: ["#16a34a", "#065f46"],
@@ -70,9 +72,8 @@ const THEME = {
   "Épices & condiments": ["#dc2626", "#7f1d1d"],
   Autres: ["#0d9488", "#134e4a"],
 };
-
-function escapeXml(s) {
-  return s.replace(
+const escapeXml = (s) =>
+  s.replace(
     /[<>&'"]/g,
     (c) =>
       ({
@@ -83,8 +84,6 @@ function escapeXml(s) {
         '"': "&quot;",
       })[c],
   );
-}
-
 function wrap(title) {
   const words = title.split(" ");
   const lines = [];
@@ -93,14 +92,11 @@ function wrap(title) {
     if ((line + " " + w).trim().length > 16) {
       lines.push(line.trim());
       line = w;
-    } else {
-      line = (line + " " + w).trim();
-    }
+    } else line = (line + " " + w).trim();
   }
   if (line) lines.push(line);
   return lines.slice(0, 3);
 }
-
 async function makeCover(dir, titre, categorie) {
   const [c1, c2] = THEME[categorie] ?? THEME.Autres;
   const lines = wrap(titre);
@@ -112,12 +108,9 @@ async function makeCover(dir, titre, categorie) {
     .join("");
   const startY = 320 - (lines.length - 1) * 33;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
-    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/>
-    </linearGradient></defs>
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>
     <rect width="800" height="600" fill="url(#g)"/>
     <circle cx="660" cy="120" r="190" fill="rgba(255,255,255,0.12)"/>
-    <circle cx="120" cy="540" r="140" fill="rgba(0,0,0,0.08)"/>
     <text x="60" y="80" font-family="sans-serif" font-size="26" font-weight="600" fill="rgba(255,255,255,0.85)">${escapeXml(categorie)}</text>
     <text x="60" y="${startY}" font-family="sans-serif" font-size="58" font-weight="800" fill="#ffffff">${tspans}</text>
     <text x="60" y="560" font-family="sans-serif" font-size="24" font-weight="700" fill="rgba(255,255,255,0.9)">Digi-Farm</text>
@@ -130,33 +123,140 @@ async function makeCover(dir, titre, categorie) {
   return name;
 }
 
-// [titre, categorie, region, prix, unite, quantite, sellerIndex]
+// --- Téléchargement d'une vraie photo (par mot-clé) ---
+async function downloadPhoto(dir, kw, lock) {
+  const tmp = path.join(os.tmpdir(), `df-${randomUUID()}`);
+  const url = `https://loremflickr.com/800/600/${encodeURIComponent(kw)}?lock=${lock}`;
+  try {
+    execFileSync("curl", ["-sL", "--max-time", "30", "-o", tmp, url], {
+      stdio: "ignore",
+    });
+    if (!fs.existsSync(tmp) || fs.statSync(tmp).size < 3000) return null;
+    fs.mkdirSync(dir, { recursive: true });
+    const name = `${randomUUID()}.webp`;
+    await sharp(tmp)
+      .rotate()
+      .resize(1280, 1280, { fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 80 })
+      .toFile(path.join(dir, name));
+    return name;
+  } catch {
+    return null;
+  } finally {
+    try {
+      fs.rmSync(tmp, { force: true });
+    } catch {}
+  }
+}
+
+// [titre, categorie, region, prix, unite, quantite, sellerIndex, motsClésPhoto]
 const PRODUCTS = [
-  ["Maïs jaune en sac", "Céréales", "Kara", 18000, "sac", 50, 1],
-  ["Riz local décortiqué", "Céréales", "Savanes", 22000, "sac", 30, 1],
-  ["Mil rouge", "Céréales", "Savanes", 16000, "sac", 25, 1],
-  ["Sorgho blanc", "Céréales", "Centrale", 15000, "sac", 20, 1],
-  ["Tomates fraîches", "Légumes", "Maritime", 500, "kg", 120, 0],
-  ["Piment frais", "Légumes", "Maritime", 800, "kg", 60, 0],
-  ["Gombo frais", "Légumes", "Plateaux", 700, "kg", 80, 2],
-  ["Oignons rouges", "Légumes", "Savanes", 600, "kg", 200, 1],
-  ["Carottes", "Légumes", "Plateaux", 750, "kg", 90, 2],
-  ["Igname Laboko", "Tubercules & racines", "Centrale", 1200, "kg", 300, 1],
-  ["Manioc frais", "Tubercules & racines", "Plateaux", 300, "kg", 400, 2],
-  ["Patate douce", "Tubercules & racines", "Kara", 450, "kg", 150, 1],
-  ["Taro", "Tubercules & racines", "Plateaux", 500, "kg", 70, 2],
-  ["Haricot niébé", "Légumineuses", "Savanes", 1000, "kg", 100, 1],
-  ["Arachides en coque", "Légumineuses", "Kara", 900, "kg", 120, 1],
-  ["Soja", "Légumineuses", "Centrale", 700, "kg", 200, 1],
-  ["Ananas pain de sucre", "Fruits", "Plateaux", 400, "kg", 250, 2],
-  ["Bananes douces", "Fruits", "Plateaux", 350, "kg", 180, 2],
-  ["Mangues mûres", "Fruits", "Centrale", 500, "kg", 140, 1],
-  ["Oranges juteuses", "Fruits", "Plateaux", 300, "kg", 220, 2],
-  ["Noix de palme", "Oléagineux", "Maritime", 250, "kg", 500, 0],
-  ["Sésame blanc", "Oléagineux", "Savanes", 1500, "kg", 60, 1],
-  ["Gingembre frais", "Épices & condiments", "Plateaux", 1200, "kg", 40, 2],
-  ["Ail local", "Épices & condiments", "Savanes", 2000, "kg", 30, 1],
-  ["Miel naturel", "Autres", "Kara", 3500, "kg", 25, 1],
+  ["Maïs jaune en sac", "Céréales", "Kara", 18000, "sac", 50, 1, "corn,maize"],
+  [
+    "Riz local décortiqué",
+    "Céréales",
+    "Savanes",
+    22000,
+    "sac",
+    30,
+    1,
+    "rice,grain",
+  ],
+  ["Mil rouge", "Céréales", "Savanes", 16000, "sac", 25, 1, "millet,grain"],
+  [
+    "Sorgho blanc",
+    "Céréales",
+    "Centrale",
+    15000,
+    "sac",
+    20,
+    1,
+    "sorghum,cereal",
+  ],
+  ["Tomates fraîches", "Légumes", "Maritime", 500, "kg", 120, 0, "tomato"],
+  ["Piment frais", "Légumes", "Maritime", 800, "kg", 60, 0, "chili,pepper"],
+  ["Gombo frais", "Légumes", "Plateaux", 700, "kg", 80, 2, "okra"],
+  ["Oignons rouges", "Légumes", "Savanes", 600, "kg", 200, 1, "onion"],
+  ["Carottes", "Légumes", "Plateaux", 750, "kg", 90, 2, "carrot"],
+  [
+    "Igname Laboko",
+    "Tubercules & racines",
+    "Centrale",
+    1200,
+    "kg",
+    300,
+    1,
+    "yam,tuber",
+  ],
+  [
+    "Manioc frais",
+    "Tubercules & racines",
+    "Plateaux",
+    300,
+    "kg",
+    400,
+    2,
+    "cassava",
+  ],
+  [
+    "Patate douce",
+    "Tubercules & racines",
+    "Kara",
+    450,
+    "kg",
+    150,
+    1,
+    "sweet,potato",
+  ],
+  ["Taro", "Tubercules & racines", "Plateaux", 500, "kg", 70, 2, "taro,root"],
+  [
+    "Haricot niébé",
+    "Légumineuses",
+    "Savanes",
+    1000,
+    "kg",
+    100,
+    1,
+    "beans,cowpea",
+  ],
+  [
+    "Arachides en coque",
+    "Légumineuses",
+    "Kara",
+    900,
+    "kg",
+    120,
+    1,
+    "peanut,groundnut",
+  ],
+  ["Soja", "Légumineuses", "Centrale", 700, "kg", 200, 1, "soybean,soy"],
+  [
+    "Ananas pain de sucre",
+    "Fruits",
+    "Plateaux",
+    400,
+    "kg",
+    250,
+    2,
+    "pineapple",
+  ],
+  ["Bananes douces", "Fruits", "Plateaux", 350, "kg", 180, 2, "banana"],
+  ["Mangues mûres", "Fruits", "Centrale", 500, "kg", 140, 1, "mango"],
+  ["Oranges juteuses", "Fruits", "Plateaux", 300, "kg", 220, 2, "orange,fruit"],
+  ["Noix de palme", "Oléagineux", "Maritime", 250, "kg", 500, 0, "palm,fruit"],
+  ["Sésame blanc", "Oléagineux", "Savanes", 1500, "kg", 60, 1, "sesame,seeds"],
+  [
+    "Gingembre frais",
+    "Épices & condiments",
+    "Plateaux",
+    1200,
+    "kg",
+    40,
+    2,
+    "ginger",
+  ],
+  ["Ail local", "Épices & condiments", "Savanes", 2000, "kg", 30, 1, "garlic"],
+  ["Miel naturel", "Autres", "Kara", 3500, "kg", 25, 1, "honey,jar"],
 ];
 
 (async () => {
@@ -174,10 +274,18 @@ const PRODUCTS = [
     "INSERT INTO listings (id, agriculteur_id, titre, categorie, description, photos, prix, unite, quantite_dispo, region, statut) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')",
   );
 
-  let count = 0;
-  for (const [titre, categorie, region, prix, unite, qte, si] of PRODUCTS) {
+  let real = 0;
+  let fallback = 0;
+  let lock = 1;
+  for (const [titre, categorie, region, prix, unite, qte, si, kw] of PRODUCTS) {
     const id = randomUUID();
-    const name = await makeCover(path.join(uploadsRoot, id), titre, categorie);
+    const dir = path.join(uploadsRoot, id);
+    let name = await downloadPhoto(dir, kw, lock++);
+    if (name) real++;
+    else {
+      name = await makeCover(dir, titre, categorie);
+      fallback++;
+    }
     const photos = JSON.stringify([`/uploads/listings/${id}/${name}`]);
     const desc = `${titre} de qualité, en provenance de la région ${region}. Récolte récente, disponible en gros et au détail. Contactez le vendeur pour la livraison ou le retrait.`;
     insert.run(
@@ -192,10 +300,10 @@ const PRODUCTS = [
       qte,
       region,
     );
-    count++;
+    process.stdout.write(name ? "." : "x");
   }
 
   console.log(
-    `Seed OK : ${SELLERS.length} vendeurs, ${count} annonces avec visuels.`,
+    `\nSeed OK : ${SELLERS.length} vendeurs, ${PRODUCTS.length} annonces (${real} vraies photos, ${fallback} visuels générés).`,
   );
 })();

@@ -68,11 +68,15 @@ connexion souvent lente, parfois peu à l'aise avec le numérique. Langue : fran
 - **Design = taste-skill / variante « soft » (editorial luxury)** : palette **crème chaud + vert sauge +
   espresso** (OKLCH), titres en **Fraunces** (serif éditorial), corps Geist, boutons `rounded-full`,
   easing `--ease-soft` cubic-bezier(0.32,.72,0,1), ombres douces, `animate-fade-up` (blur+translate). Réf. 21st.dev.
-- **Tableau de bord par rôle** : `/tableau-de-bord` (protégé) rend `SellerDashboard` (gestion annonces) ou
-  `BuyerDashboard` (commandes à venir + compte). Après connexion/inscription → **tout le monde → /tableau-de-bord**.
-  Bouton « Commander » : connecté → placeholder (Phase 4) ; déconnecté → lien connexion.
-- **Seed riche** : `node scripts/seed-demo.cjs` → 3 vendeurs + **25 annonces** avec **visuels générés**
-  (dégradés par catégorie + nom, via sharp/SVG, hors-ligne) dans public/uploads (gitignoré) ; `--clean` pour retirer.
+- **Images** : `next.config.ts` → `images.unoptimized: true`. L'optimizer Next 16 rejette les chemins
+  locaux `/uploads/**` (« url parameter is invalid »), ce qui CASSAIT l'affichage. On sert les WebP
+  (déjà compressés par sharp) en direct. La landing est **auth-aware** (pas de « créer un compte » si connecté).
+- **Tableau de bord par rôle** : `/tableau-de-bord` (protégé) rend `SellerDashboard` ou `BuyerDashboard`.
+  Connexion/inscription → **tout le monde → /tableau-de-bord**. « Commander » : connecté → placeholder
+  (Phase 4) ; déconnecté → lien connexion.
+- **Seed riche** : `node scripts/seed-demo.cjs` → 3 vendeurs + **25 annonces** avec de **vraies photos**
+  téléchargées (LoremFlickr par mot-clé, via curl) compressées WebP ; repli sur visuel généré si échec.
+  `--clean` pour retirer. Fichiers dans public/uploads (gitignoré).
 - **Rappels** : auth scrypt + sessions SHA-256 ; autorisation serveur (pas de RLS) ; SQLite+Drizzle **synchrone** ;
   `server-only` aliasé en test ; `middleware.ts` déprécié Next 16 (à renommer `proxy` plus tard) ;
   crash worker Turbopack possible en *dev* sur routes DB → vérifier en **prod**.

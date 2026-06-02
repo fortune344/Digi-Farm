@@ -11,6 +11,7 @@ import Link from "next/link";
 import { ProductCard } from "@/components/listings/product-card";
 import { SiteHeader } from "@/components/site-header";
 import { buttonVariants } from "@/components/ui/button";
+import { getCurrentUser } from "@/lib/auth/dal";
 import { getPublicListings } from "@/lib/listings/public-queries";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +34,7 @@ const STEPS = [
 ];
 
 export default async function Home() {
+  const user = await getCurrentUser();
   const { items } = getPublicListings({ sort: "recent", page: 1 });
   const featured = items.slice(0, 8);
 
@@ -72,12 +74,12 @@ export default async function Home() {
                 <ArrowRight className="size-4 transition-transform duration-200 ease-soft group-hover:translate-x-1" />
               </Link>
               <Link
-                href="/inscription"
+                href={user ? "/tableau-de-bord" : "/inscription"}
                 className={cn(
                   buttonVariants({ variant: "outline", size: "lg" }),
                 )}
               >
-                Devenir vendeur
+                {user ? "Mon tableau de bord" : "Devenir vendeur"}
               </Link>
             </div>
 
@@ -168,34 +170,36 @@ export default async function Home() {
           </section>
         )}
 
-        {/* CTA AGRICULTEURS */}
-        <section className="mx-auto max-w-6xl px-4 py-20">
-          <div className="relative overflow-hidden rounded-[2rem] bg-primary px-6 py-16 text-center text-primary-foreground sm:px-12">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_55%)]"
-            />
-            <div className="relative mx-auto max-w-2xl">
-              <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-                Vous êtes agriculteur ?
-              </h2>
-              <p className="mt-3 text-primary-foreground/85">
-                Publiez vos produits gratuitement et vendez en direct à des
-                acheteurs partout au Togo.
-              </p>
-              <Link
-                href="/inscription"
-                className={cn(
-                  buttonVariants({ size: "lg" }),
-                  "mt-7 bg-card text-foreground hover:bg-card/90",
-                )}
-              >
-                Créer mon compte vendeur
-                <ArrowRight className="size-4" />
-              </Link>
+        {/* CTA AGRICULTEURS — uniquement pour les visiteurs non connectés */}
+        {!user && (
+          <section className="mx-auto max-w-6xl px-4 py-20">
+            <div className="relative overflow-hidden rounded-[2rem] bg-primary px-6 py-16 text-center text-primary-foreground sm:px-12">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_55%)]"
+              />
+              <div className="relative mx-auto max-w-2xl">
+                <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+                  Vous êtes agriculteur ?
+                </h2>
+                <p className="mt-3 text-primary-foreground/85">
+                  Publiez vos produits gratuitement et vendez en direct à des
+                  acheteurs partout au Togo.
+                </p>
+                <Link
+                  href="/inscription"
+                  className={cn(
+                    buttonVariants({ size: "lg" }),
+                    "mt-7 bg-card text-foreground hover:bg-card/90",
+                  )}
+                >
+                  Créer mon compte vendeur
+                  <ArrowRight className="size-4" />
+                </Link>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <footer className="border-t bg-muted/30">
