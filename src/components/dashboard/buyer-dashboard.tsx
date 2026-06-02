@@ -6,6 +6,7 @@ import {
   ShoppingBasket,
 } from "lucide-react";
 import Link from "next/link";
+import { SequestreBadge } from "@/components/orders/sequestre-badge";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -14,17 +15,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ORDER_STATUT_LABELS } from "@/lib/constants";
+import { formatFCFA } from "@/lib/format";
+import { getOrdersByBuyer } from "@/lib/orders/queries";
 import { cn } from "@/lib/utils";
 
 export function BuyerDashboard({
+  userId,
   nom,
   email,
   region,
 }: {
+  userId: string;
   nom: string;
   email: string;
   region: string;
 }) {
+  const orders = getOrdersByBuyer(userId);
+
   return (
     <>
       <div className="mb-8">
@@ -35,7 +43,7 @@ export function BuyerDashboard({
           Bonjour {nom.split(" ")[0]} 👋
         </h1>
         <p className="mt-1 text-muted-foreground">
-          Retrouvez vos commandes et parcourez le marché.
+          Suivez vos commandes et parcourez le marché.
         </p>
       </div>
 
@@ -47,24 +55,51 @@ export function BuyerDashboard({
               Mes commandes
             </CardTitle>
             <CardDescription>
-              Le suivi de vos commandes et du paiement sécurisé arrive très
-              bientôt.
+              {orders.length} commande{orders.length > 1 ? "s" : ""}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed bg-muted/30 py-12 text-center">
-              <ShoppingBasket className="size-9 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
-                Vous n'avez pas encore de commande.
-              </p>
-              <Link
-                href="/marche"
-                className={cn(buttonVariants({ size: "sm" }), "group")}
-              >
-                Parcourir le marché
-                <ArrowRight className="size-4 transition-transform duration-200 ease-soft group-hover:translate-x-1" />
-              </Link>
-            </div>
+            {orders.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed bg-muted/30 py-12 text-center">
+                <ShoppingBasket className="size-9 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  Vous n'avez pas encore de commande.
+                </p>
+                <Link
+                  href="/marche"
+                  className={cn(buttonVariants({ size: "sm" }), "group")}
+                >
+                  Parcourir le marché
+                  <ArrowRight className="size-4 transition-transform duration-200 ease-soft group-hover:translate-x-1" />
+                </Link>
+              </div>
+            ) : (
+              <ul className="divide-y">
+                {orders.map(({ order, payment, item }) => (
+                  <li key={order.id}>
+                    <Link
+                      href={`/commande/${order.id}`}
+                      className="flex items-center justify-between gap-3 py-3 transition-colors hover:text-primary"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">
+                          {item?.titre ?? "Commande"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {ORDER_STATUT_LABELS[order.statut]}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-3">
+                        <SequestreBadge statut={payment.statutSequestre} />
+                        <span className="font-semibold">
+                          {formatFCFA(order.total)}
+                        </span>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardContent>
         </Card>
 

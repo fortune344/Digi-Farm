@@ -14,5 +14,13 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profil/:path*", "/tableau-de-bord/:path*", "/annonces/:path*"],
+  // NB : /api/paiement/webhook n'est PAS protégé (callback agrégateur sans session).
+  matcher: [
+    "/profil/:path*",
+    "/tableau-de-bord/:path*",
+    "/annonces/:path*",
+    "/commander/:path*",
+    "/commande/:path*",
+    "/paiement/:path*",
+  ],
 };

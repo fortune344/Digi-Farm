@@ -19,6 +19,7 @@ export default async function TableauDeBordPage() {
           <SellerDashboard userId={id} nom={profile.nom} />
         ) : (
           <BuyerDashboard
+            userId={id}
             nom={profile.nom}
             email={email}
             region={profile.region}

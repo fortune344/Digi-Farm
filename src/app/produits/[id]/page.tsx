@@ -1,4 +1,10 @@
-import { ArrowLeft, BadgeCheck, MapPin, PackageCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  BadgeCheck,
+  MapPin,
+  PackageCheck,
+  ShieldCheck,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -115,16 +121,7 @@ export default async function ProduitPage({ params }: Props) {
                 <Button className="w-full" size="lg" disabled>
                   Produit épuisé
                 </Button>
-              ) : user ? (
-                <>
-                  <Button className="w-full" size="lg" disabled>
-                    Commander
-                  </Button>
-                  <p className="mt-2 text-center text-xs text-muted-foreground">
-                    La commande et le paiement séquestré arrivent très bientôt.
-                  </p>
-                </>
-              ) : (
+              ) : !user ? (
                 <>
                   <Link
                     href="/connexion"
@@ -140,6 +137,28 @@ export default async function ProduitPage({ params }: Props) {
                     >
                       Créer un compte
                     </Link>
+                  </p>
+                </>
+              ) : user.profile.role === "acheteur" ? (
+                <>
+                  <Link
+                    href={`/commander/${listing.id}`}
+                    className={cn(buttonVariants({ size: "lg" }), "w-full")}
+                  >
+                    Commander
+                  </Link>
+                  <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
+                    <ShieldCheck className="size-3.5 text-primary" />
+                    Paiement séquestré jusqu'à réception.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <Button className="w-full" size="lg" disabled>
+                    Commander
+                  </Button>
+                  <p className="mt-2 text-center text-xs text-muted-foreground">
+                    Réservé aux comptes acheteurs.
                   </p>
                 </>
               )}

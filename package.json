@@ -13,7 +13,9 @@
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "node scripts/seed-demo.cjs",
+    "test:webhook": "node scripts/test-webhook.cjs"
   },
   "dependencies": {
     "better-sqlite3": "12.10.0",

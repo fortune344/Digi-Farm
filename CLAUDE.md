@@ -62,22 +62,21 @@ connexion souvent lente, parfois peu à l'aise avec le numérique. Langue : fran
 
 ## Ce qui a été décidé
 (Mettre à jour à chaque session — garder les 5 décisions les plus récentes.)
-- **Refonte design + architecture (sur retour utilisateur)** : `/` = **landing éditoriale** (hero, étapes,
-  produits en vedette, CTA), **catalogue déplacé sur `/marche`** (recherche+filtres+pagination 12/page).
-  Fiche produit `/produits/[id]`. 38 tests, build+runtime prod OK.
-- **Design = taste-skill / variante « soft » (editorial luxury)** : palette **crème chaud + vert sauge +
-  espresso** (OKLCH), titres en **Fraunces** (serif éditorial), corps Geist, boutons `rounded-full`,
-  easing `--ease-soft` cubic-bezier(0.32,.72,0,1), ombres douces, `animate-fade-up` (blur+translate). Réf. 21st.dev.
-- **Images** : `next.config.ts` → `images.unoptimized: true`. L'optimizer Next 16 rejette les chemins
-  locaux `/uploads/**` (« url parameter is invalid »), ce qui CASSAIT l'affichage. On sert les WebP
-  (déjà compressés par sharp) en direct. La landing est **auth-aware** (pas de « créer un compte » si connecté).
-- **Tableau de bord par rôle** : `/tableau-de-bord` (protégé) rend `SellerDashboard` ou `BuyerDashboard`.
-  Connexion/inscription → **tout le monde → /tableau-de-bord**. « Commander » : connecté → placeholder
-  (Phase 4) ; déconnecté → lien connexion.
-- **Seed riche** : `node scripts/seed-demo.cjs` → 3 vendeurs + **25 annonces** avec **vraies photos**
-  (Wikimedia Commons : recherche filtrée + **surcharges explicites** `Special:FilePath` pour les cas durs ;
-  LoremFlickr abandonné car non pertinent). `--dry-run` montre les fichiers résolus, `--clean` retire.
-  **Piège** : `next start` indexe `public/` au démarrage → **redémarrer le serveur après un seed**, sinon images 404.
+- **Phase 4 terminée — commande + paiement séquestré** : tables orders/order_items/payments/payment_audit ;
+  tunnel `/commander/[id]` (total recalculé serveur, commission 5%, anti self-buy, stock vérifié) →
+  agrégateur **SIMULÉ** `/paiement/mock/[ref]` → **webhook signé** `/api/paiement/webhook`.
+  Machine à états (`escrow.ts`) : en_attente→collecte→sequestre (PAS de libération auto = Phase 5).
+  51 tests + **test E2E webhook 11/11** (séquestre, idempotence, signature 401, montant 400). `node scripts/test-webhook.cjs`.
+- **Agrégateur** : interface `PaymentProvider` (`src/lib/payments/provider.ts`) ; impl. mock pour l'instant
+  (pas de compte marchand). Brancher CinetPay/FedaPay/Hub2 plus tard = nouvelle impl + schéma de signature réel.
+  Secret webhook : `PAYMENT_WEBHOOK_SECRET` (fallback dev si absent).
+- **Refonte design (taste-skill « soft »)** : `/` = landing éditoriale, catalogue sur `/marche` ; palette
+  crème/sauge/espresso (OKLCH), titres **Fraunces**, boutons `rounded-full`, easing `--ease-soft`. Réf. 21st.dev.
+- **Images** : `images.unoptimized: true` (l'optimizer Next 16 rejette les chemins locaux `/uploads/**`).
+  Tableau de bord **par rôle** (`/tableau-de-bord`). Prix affiché **par unité** (kg/sac/tonne), pas au kilo partout.
+- **Seed** : `node scripts/seed-demo.cjs` → 3 vendeurs + 25 annonces, **vraies photos** Wikimedia Commons
+  (recherche filtrée + surcharges `Special:FilePath`). `--dry-run` / `--clean`.
+  **Piège** : `next start` indexe `public/` au boot → **redémarrer après un seed** ; vérifier en **prod** (worker dev capricieux).
 - **Rappels** : auth scrypt + sessions SHA-256 ; autorisation serveur (pas de RLS) ; SQLite+Drizzle **synchrone** ;
   `server-only` aliasé en test ; `middleware.ts` déprécié Next 16 (à renommer `proxy` plus tard) ;
   crash worker Turbopack possible en *dev* sur routes DB → vérifier en **prod**.
