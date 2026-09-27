@@ -1,0 +1,10 @@
+{% load icone %}{% comment %}
+  Erreurs générales (non liées à un champ). Les erreurs de champ restent
+  affichées à côté de leur champ : on ne renvoie pas l'utilisateur en haut de page.
+{% endcomment %}
+{% if formulaire.non_field_errors %}
+  <div class="mb-4 flex items-start gap-2.5 rounded-xl bg-destructive/12 px-4 py-3 text-sm text-destructive" role="alert">
+    {% icone "circle-alert" classe="size-4 shrink-0 mt-0.5" %}
+    <div>{% for erreur in formulaire.non_field_errors %}<p>{{ erreur }}</p>{% endfor %}</div>
+  </div>
+{% endif %}

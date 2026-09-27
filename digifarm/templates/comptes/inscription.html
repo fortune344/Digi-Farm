@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load icone %}
+
+{% block titre %}Créer un compte — Digi-Farm{% endblock %}
+
+{% block contenu %}
+<div class="mx-auto w-full max-w-lg px-4 py-12 sm:py-16">
+  <div class="mb-8 text-center">
+    <p class="surtitre">Bienvenue</p>
+    <h1 class="titre mt-2 text-3xl font-semibold">Créer un compte</h1>
+    <p class="mt-2 text-sm text-muted-foreground">
+      Vendez votre récolte ou achetez en direct, avec paiement protégé.
+    </p>
+  </div>
+
+  <form method="post" class="carte p-6 shadow-sm" novalidate>
+    {% csrf_token %}
+    {% include "partiels/erreurs_formulaire.html" with formulaire=formulaire %}
+
+    {% include "partiels/champ_radio.html" with champ=formulaire.role %}
+    {% include "partiels/champ.html" with champ=formulaire.nom %}
+    {% include "partiels/champ.html" with champ=formulaire.email %}
+    {% include "partiels/champ.html" with champ=formulaire.telephone %}
+    {% include "partiels/champ.html" with champ=formulaire.region %}
+    {% include "partiels/champ.html" with champ=formulaire.mot_de_passe %}
+
+    <button type="submit" class="bouton primaire grand pleine-largeur mt-2">
+      {% icone "badge-check" %}Créer mon compte
+    </button>
+  </form>
+
+  <p class="mt-6 text-center text-sm text-muted-foreground">
+    Déjà inscrit ?
+    <a href="{% url 'comptes:connexion' %}" class="font-medium text-primary underline-offset-4 hover:underline">
+      Se connecter
+    </a>
+  </p>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% load icone digifarm %}{% comment %}
+  Une commande vue par l'acheteur. Quand la confirmation est possible, le bouton
+  est dans la ligne — mais avec un avertissement clair : cette action libère
+  l'argent vers le vendeur et n'est pas réversible.
+{% endcomment %}
+<li class="carte p-4 {% if confirmable %}border-primary/25{% endif %}">
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
+    <div class="min-w-0 flex-1">
+      <div class="flex flex-wrap items-center gap-2">
+        {% include "partiels/badge_statut_commande.html" with commande=commande %}
+        {% if commande.paiement %}
+          {% include "partiels/badge_sequestre.html" with paiement=commande.paiement %}
+        {% endif %}
+      </div>
+
+      <p class="mt-2 font-medium">
+        {% for ligne in commande.lignes.all %}
+          {{ ligne.quantite|nombre }} × {{ ligne.titre }}{% if not forloop.last %} · {% endif %}
+        {% empty %}Commande{% endfor %}
+      </p>
+
+      <p class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+        <span class="inline-flex items-center gap-1">
+          {% icone "sprout" classe="size-3.5" %}{{ commande.agriculteur.profil.nom|default:"Vendeur" }}
+        </span>
+        <span class="inline-flex items-center gap-1">
+          {% icone "truck" classe="size-3.5" %}{{ commande.get_mode_livraison_display }}
+        </span>
+        <span>N° {{ commande.reference_courte }}</span>
+      </p>
+    </div>
+
+    <div class="shrink-0 lg:w-32 lg:text-right">
+      <p class="titre text-xl font-semibold tabular-nums">{{ commande.total|fcfa }}</p>
+      <p class="text-xs text-muted-foreground">{{ commande.cree_le|date:"j F" }}</p>
+    </div>
+
+    <div class="flex shrink-0 flex-col gap-2 sm:flex-row lg:w-56 lg:justify-end">
+      {% if confirmable %}
+        {# Deux temps volontaires : libérer le paiement est définitif. #}
+        <details>
+          <summary class="bouton primaire petit list-none marker:content-none">
+            {% icone "circle-check" %}Confirmer la réception
+          </summary>
+          <div class="mt-2 rounded-xl border border-border bg-card p-3 text-left shadow-lg">
+            <p class="text-sm">
+              En confirmant, <strong>{{ commande.paiement.montant_net_vendeur|fcfa }}</strong>
+              sont versés au vendeur. Cette action est définitive.
+            </p>
+            <form method="post" action="{% url 'commandes:confirmer' commande.pk %}" class="mt-3">
+              {% csrf_token %}
+              <input type="hidden" name="retour" value="tableau_de_bord">
+              <button type="submit" class="bouton primaire petit pleine-largeur">
+                {% icone "circle-check" %}Oui, j'ai bien reçu
+              </button>
+            </form>
+          </div>
+        </details>
+      {% endif %}
+      <a href="{{ commande.get_absolute_url }}" class="bouton fantome petit">
+        Détail{% icone "chevron-right" %}
+      </a>
+    </div>
+  </div>
+</li>

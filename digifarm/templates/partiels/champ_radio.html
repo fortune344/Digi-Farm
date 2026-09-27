@@ -1,0 +1,22 @@
+{% load icone %}{% comment %}
+  Choix en cartes cliquables : cible tactile large (44 px minimum), état
+  sélectionné visible autrement que par la couleur seule.
+{% endcomment %}
+<fieldset class="mb-4">
+  <legend class="etiquette">{{ champ.label }}</legend>
+  <div class="grid gap-2 sm:grid-cols-2">
+    {% for option in champ %}
+      <label class="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-border
+                    bg-card px-4 py-3 text-sm transition-colors
+                    has-checked:border-primary has-checked:bg-accent
+                    has-checked:text-accent-foreground hover:bg-muted">
+        {{ option.tag }}
+        <span class="font-medium">{{ option.choice_label }}</span>
+      </label>
+    {% endfor %}
+  </div>
+  {% if champ.help_text %}<p class="aide">{{ champ.help_text }}</p>{% endif %}
+  {% for erreur in champ.errors %}
+    <p class="erreur">{% icone "circle-alert" classe="size-3.5 shrink-0 mt-0.5" %}{{ erreur }}</p>
+  {% endfor %}
+</fieldset>

@@ -1,0 +1,40 @@
+{% load icone digifarm %}{% comment %}
+  Carte produit du marché. Les images sont en chargement différé et de taille
+  déclarée : pas de saut de mise en page pendant le chargement (CLS).
+{% endcomment %}
+<article class="carte group flex flex-col overflow-hidden transition-transform duration-300
+                hover:-translate-y-0.5 motion-reduce:hover:translate-y-0">
+  <a href="{{ annonce.get_absolute_url }}" class="relative block aspect-4/3 overflow-hidden bg-muted">
+    {% with photo=annonce.photo_principale %}
+      {% if photo %}
+        <img src="{{ photo.image.url }}" alt="{{ annonce.titre }}"
+             loading="lazy" decoding="async" width="480" height="360"
+             class="size-full object-cover transition-transform duration-500
+                    group-hover:scale-[1.03] motion-reduce:transition-none">
+      {% else %}
+        <span class="flex size-full items-center justify-center text-muted-foreground">
+          {% icone "image-off" classe="size-8" %}
+        </span>
+      {% endif %}
+    {% endwith %}
+    {% if annonce.est_epuisee %}
+      <span class="absolute left-2.5 top-2.5 badge attente">{% icone "hourglass" %}Épuisée</span>
+    {% endif %}
+  </a>
+
+  <div class="flex flex-1 flex-col p-4">
+    <h3 class="font-medium leading-snug">
+      <a href="{{ annonce.get_absolute_url }}" class="hover:text-primary">{{ annonce.titre }}</a>
+    </h3>
+    <p class="mt-1 text-sm text-muted-foreground">
+      {{ annonce.categorie }} · {{ annonce.region }}
+    </p>
+    <p class="titre mt-3 text-lg font-semibold text-primary">
+      {{ annonce.prix|fcfa }}<span class="text-sm font-normal text-muted-foreground"> / {{ annonce.unite }}</span>
+    </p>
+    <p class="mt-auto pt-2 text-xs text-muted-foreground">
+      {{ annonce.quantite_dispo|stock:annonce.unite }} disponible{% if annonce.agriculteur.profil.nom %}
+        · {{ annonce.agriculteur.profil.nom }}{% endif %}
+    </p>
+  </div>
+</article>

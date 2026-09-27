@@ -1,0 +1,7 @@
+{% load icone %}{% if annonce.est_epuisee %}
+  <span class="badge attente">{% icone "hourglass" %}Épuisée</span>
+{% elif annonce.statut == "suspendue" %}
+  <span class="badge neutre">{% icone "lock" %}Hors ligne</span>
+{% else %}
+  <span class="badge succes">{% icone "circle-check" %}En ligne</span>
+{% endif %}

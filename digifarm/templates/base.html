@@ -1,0 +1,55 @@
+{% load static icone %}<!doctype html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titre %}Digi-Farm — la marketplace agricole du Togo{% endblock %}</title>
+  <meta name="description" content="{% block description %}Achetez et vendez des produits agricoles en direct au Togo, avec paiement sécurisé et livraison.{% endblock %}">
+  <meta name="theme-color" content="#fbf8f1">
+
+  {# Seul Fraunces (titres) vient du réseau ; le corps de texte utilise la pile
+     système, ce qui évite ~100 Ko au premier chargement sur connexion lente. #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap">
+
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <script src="{% static 'js/htmx.min.js' %}" defer></script>
+</head>
+
+<body class="flex min-h-full flex-col">
+  {# Permet d'atteindre le contenu directement au clavier. #}
+  <a href="#contenu"
+     class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50
+            focus:rounded-full focus:bg-primary focus:px-4 focus:py-2
+            focus:text-sm focus:text-primary-foreground">
+    Aller au contenu
+  </a>
+
+  {% block entete %}{% include "partiels/entete.html" %}{% endblock %}
+
+  {% if messages %}
+    <div class="mx-auto w-full max-w-5xl px-4 pt-4" role="status" aria-live="polite">
+      {% for message in messages %}
+        <div class="mb-2 flex items-start gap-2.5 rounded-xl px-4 py-3 text-sm
+          {% if message.tags == 'error' %}bg-destructive/12 text-destructive
+          {% elif message.tags == 'warning' %}bg-attente text-attente-foreground
+          {% else %}bg-succes text-succes-foreground{% endif %}">
+          {% if message.tags == 'error' %}{% icone "circle-alert" classe="size-4 mt-0.5" %}
+          {% elif message.tags == 'warning' %}{% icone "triangle-alert" classe="size-4 mt-0.5" %}
+          {% else %}{% icone "circle-check" classe="size-4 mt-0.5" %}{% endif %}
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main id="contenu" class="flex-1">
+    {% block contenu %}{% endblock %}
+  </main>
+
+  {% block pied %}{% include "partiels/pied.html" %}{% endblock %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load icone %}
+
+{% block titre %}Connexion — Digi-Farm{% endblock %}
+
+{% block contenu %}
+<div class="mx-auto w-full max-w-md px-4 py-12 sm:py-20">
+  <div class="mb-8 text-center">
+    <p class="surtitre">Votre espace</p>
+    <h1 class="titre mt-2 text-3xl font-semibold">Connexion</h1>
+    <p class="mt-2 text-sm text-muted-foreground">
+      Retrouvez vos annonces, vos commandes et vos paiements.
+    </p>
+  </div>
+
+  <form method="post" class="carte p-6 shadow-sm" novalidate>
+    {% csrf_token %}
+    {% if suivant %}<input type="hidden" name="next" value="{{ suivant }}">{% endif %}
+    {% include "partiels/erreurs_formulaire.html" with formulaire=formulaire %}
+
+    {% for champ in formulaire %}
+      {% include "partiels/champ.html" with champ=champ %}
+    {% endfor %}
+
+    <button type="submit" class="bouton primaire grand pleine-largeur mt-2">
+      {% icone "log-out" classe="size-4 rotate-180" %}Se connecter
+    </button>
+  </form>
+
+  <p class="mt-6 text-center text-sm text-muted-foreground">
+    Pas encore de compte ?
+    <a href="{% url 'comptes:inscription' %}" class="font-medium text-primary underline-offset-4 hover:underline">
+      Créer un compte
+    </a>
+  </p>
+</div>
+{% endblock %}

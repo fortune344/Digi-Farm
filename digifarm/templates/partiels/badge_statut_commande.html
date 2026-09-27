@@ -1,0 +1,15 @@
+{% load icone %}{% if commande.statut == "litige" %}
+  <span class="badge alerte">{% icone "triangle-alert" %}Litige</span>
+{% elif commande.statut == "livree" %}
+  <span class="badge succes">{% icone "circle-check" %}Livrée</span>
+{% elif commande.statut == "expediee" %}
+  <span class="badge attente">{% icone "truck" %}Expédiée</span>
+{% elif commande.statut == "preparee" %}
+  <span class="badge attente">{% icone "package-check" %}Préparée</span>
+{% elif commande.statut == "payee" %}
+  <span class="badge accent">{% icone "package" %}À préparer</span>
+{% elif commande.statut == "annulee" %}
+  <span class="badge neutre">{% icone "x" %}Annulée</span>
+{% else %}
+  <span class="badge neutre">{% icone "clock" %}En attente de paiement</span>
+{% endif %}

@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...sauf le modèle, qui ne contient aucune valeur réelle et doit être versionné.
+!.env.example
 
 # base de données SQLite locale
 /data/*.db
@@ -49,3 +51,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# --- Django (digifarm/) ---
+digifarm/db.sqlite3
+digifarm/db.sqlite3-*
+digifarm/staticfiles/
+digifarm/static/css/site.css
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# photos d'annonces envoyées par les utilisateurs
+/media/

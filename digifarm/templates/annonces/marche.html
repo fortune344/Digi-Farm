@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load icone digifarm %}
+
+{% block titre %}Le marché — Digi-Farm{% endblock %}
+{% block description %}Parcourez les produits agricoles en vente au Togo : céréales, légumes, tubercules, fruits.{% endblock %}
+
+{% block contenu %}
+<div class="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
+
+  <div class="mb-6">
+    <p class="surtitre">Le marché</p>
+    <h1 class="titre mt-2 text-3xl font-semibold sm:text-4xl">Produits en vente</h1>
+    <p class="mt-1.5 text-sm text-muted-foreground">
+      {{ total }} annonce{{ total|pluralize }}{% if filtres_actifs %} correspondant à votre recherche{% endif %}
+    </p>
+  </div>
+
+  {# Filtres en GET : l'URL reste partageable et le retour navigateur marche. #}
+  <form method="get" class="carte mb-8 p-4">
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="lg:col-span-2">
+        <label class="etiquette" for="q">Rechercher</label>
+        <input type="search" id="q" name="q" value="{{ recherche }}" class="champ"
+               placeholder="Maïs, tomate, igname…" inputmode="search">
+      </div>
+      <div>
+        <label class="etiquette" for="categorie">Catégorie</label>
+        <select id="categorie" name="categorie" class="champ">
+          <option value="">Toutes</option>
+          {% for valeur, libelle in categories %}
+            <option value="{{ valeur }}" {% if valeur == categorie_active %}selected{% endif %}>{{ libelle }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="etiquette" for="region">Région</label>
+        <select id="region" name="region" class="champ">
+          <option value="">Toutes</option>
+          {% for valeur, libelle in regions %}
+            <option value="{{ valeur }}" {% if valeur == region_active %}selected{% endif %}>{{ libelle }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-3 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <label class="etiquette" for="tri">Trier par</label>
+        <select id="tri" name="tri" class="champ w-auto">
+          <option value="recent" {% if tri_actif == "recent" %}selected{% endif %}>Plus récent</option>
+          <option value="prix_croissant" {% if tri_actif == "prix_croissant" %}selected{% endif %}>Prix croissant</option>
+          <option value="prix_decroissant" {% if tri_actif == "prix_decroissant" %}selected{% endif %}>Prix décroissant</option>
+        </select>
+      </div>
+      <div class="flex gap-2">
+        {% if filtres_actifs %}
+          <a href="{% url 'annonces:marche' %}" class="bouton fantome petit">{% icone "x" %}Effacer</a>
+        {% endif %}
+        <button type="submit" class="bouton primaire petit">{% icone "search" %}Filtrer</button>
+      </div>
+    </div>
+  </form>
+
+  {% if annonces %}
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% for annonce in annonces %}
+        {% include "partiels/carte_annonce.html" with annonce=annonce %}
+      {% endfor %}
+    </div>
+
+    {% if nb_pages > 1 %}
+      <nav class="mt-10 flex items-center justify-center gap-3" aria-label="Pagination">
+        {% if page_precedente %}
+          <a href="?{{ parametres }}&amp;page={{ page_precedente }}" class="bouton contour petit">
+            {% icone "chevron-left" %}Précédent
+          </a>
+        {% else %}
+          <span class="bouton contour petit opacity-40" aria-disabled="true">
+            {% icone "chevron-left" %}Précédent
+          </span>
+        {% endif %}
+
+        <span class="text-sm text-muted-foreground">Page {{ page }} sur {{ nb_pages }}</span>
+
+        {% if page_suivante %}
+          <a href="?{{ parametres }}&amp;page={{ page_suivante }}" class="bouton contour petit">
+            Suivant{% icone "chevron-right" %}
+          </a>
+        {% else %}
+          <span class="bouton contour petit opacity-40" aria-disabled="true">
+            Suivant{% icone "chevron-right" %}
+          </span>
+        {% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <div class="carte flex flex-col items-center gap-3 px-6 py-16 text-center">
+      <span class="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+        {% icone "search" classe="size-6" %}
+      </span>
+      <p class="titre text-lg font-semibold">Aucun produit ne correspond</p>
+      <p class="max-w-sm text-sm text-muted-foreground">
+        Essayez avec moins de filtres, ou une autre région.
+      </p>
+      {% if filtres_actifs %}
+        <a href="{% url 'annonces:marche' %}" class="bouton contour petit mt-1">
+          {% icone "x" %}Effacer les filtres
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

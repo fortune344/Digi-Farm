@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load icone digifarm %}
+
+{% block titre %}{{ annonce.titre }} — Digi-Farm{% endblock %}
+{% block description %}{{ annonce.description|truncatechars:150 }}{% endblock %}
+
+{% block contenu %}
+<div class="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
+
+  <a href="{% url 'annonces:marche' %}" class="bouton fantome petit mb-6 -ml-4">
+    {% icone "arrow-left" %}Retour au marché
+  </a>
+
+  <div class="grid gap-8 lg:grid-cols-2">
+
+    {# ------------------------------------------------------------- galerie #}
+    <div>
+      <div class="carte overflow-hidden">
+        {% with photo=annonce.photo_principale %}
+          {% if photo %}
+            <img src="{{ photo.image.url }}" alt="{{ annonce.titre }}"
+                 width="800" height="600" decoding="async"
+                 class="aspect-4/3 w-full object-cover">
+          {% else %}
+            <div class="flex aspect-4/3 w-full items-center justify-center bg-muted text-muted-foreground">
+              {% icone "image-off" classe="size-10" %}
+            </div>
+          {% endif %}
+        {% endwith %}
+      </div>
+
+      {% if annonce.photos.count > 1 %}
+        <div class="mt-3 grid grid-cols-4 gap-2">
+          {% for photo in annonce.photos.all %}
+            {% if not forloop.first %}
+              <img src="{{ photo.image.url }}" alt="{{ annonce.titre }} — photo {{ forloop.counter }}"
+                   loading="lazy" decoding="async" width="200" height="200"
+                   class="aspect-square w-full rounded-xl object-cover">
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {# ------------------------------------------------------------- détails #}
+    <div>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="badge neutre">{{ annonce.categorie }}</span>
+        <span class="badge neutre">{% icone "map-pin" %}{{ annonce.region }}</span>
+        {% include "partiels/badge_statut_annonce.html" with annonce=annonce %}
+      </div>
+
+      <h1 class="titre mt-4 text-3xl font-semibold sm:text-4xl">{{ annonce.titre }}</h1>
+
+      <p class="titre mt-4 text-3xl font-semibold text-primary">
+        {{ annonce.prix|fcfa }}
+        <span class="text-base font-normal text-muted-foreground">/ {{ annonce.unite }}</span>
+      </p>
+
+      <p class="mt-2 text-sm text-muted-foreground">
+        {% icone "boxes" classe="inline size-4" %}
+        {{ annonce.quantite_dispo|stock:annonce.unite }} disponible
+      </p>
+
+      <div class="mt-6 whitespace-pre-line text-muted-foreground">{{ annonce.description }}</div>
+
+      {# vendeur #}
+      <div class="carte mt-6 flex items-center gap-3 p-4">
+        <span class="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
+          {% icone "sprout" classe="size-5" %}
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-medium">{{ annonce.agriculteur.profil.nom|default:"Agriculteur" }}</p>
+          <p class="text-xs text-muted-foreground">
+            {{ annonce.agriculteur.profil.region }}
+            {% if annonce.agriculteur.profil.verifie %} · vendeur vérifié{% endif %}
+          </p>
+        </div>
+        {% if annonce.agriculteur.profil.verifie %}
+          <span class="badge succes">{% icone "badge-check" %}Vérifié</span>
+        {% endif %}
+      </div>
+
+      {# action d'achat #}
+      <div class="mt-6">
+        {% if est_le_vendeur %}
+          <div class="carte flex flex-wrap items-center justify-between gap-3 p-4">
+            <p class="text-sm text-muted-foreground">C'est votre annonce.</p>
+            <a href="{% url 'annonces:modifier' annonce.pk %}" class="bouton contour petit">
+              {% icone "pencil" %}Modifier
+            </a>
+          </div>
+        {% elif not annonce.est_disponible %}
+          <p class="carte p-4 text-sm text-muted-foreground">
+            Ce produit n'est plus disponible pour le moment.
+          </p>
+        {% elif not user.is_authenticated %}
+          <a href="{% url 'comptes:connexion' %}?next={{ request.path|urlencode }}"
+             class="bouton primaire grand pleine-largeur">
+            {% icone "shopping-cart" %}Se connecter pour commander
+          </a>
+        {% elif profil.est_acheteur %}
+          <a href="{% url 'commandes:commander' annonce.pk %}" class="bouton primaire grand pleine-largeur">
+            {% icone "shopping-cart" %}Commander
+          </a>
+        {% else %}
+          <p class="carte p-4 text-sm text-muted-foreground">
+            Seuls les comptes acheteurs peuvent commander.
+          </p>
+        {% endif %}
+
+        <p class="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
+          {% icone "shield-check" classe="size-4 shrink-0 text-primary" %}
+          Votre paiement reste bloqué jusqu'à ce que vous confirmiez avoir reçu
+          la marchandise.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {# ------------------------------------------------- autres annonces du vendeur #}
+  {% if autres %}
+    <section class="mt-14">
+      <h2 class="titre mb-5 text-xl font-semibold">Autres produits de ce vendeur</h2>
+      <div class="grid gap-4 sm:grid-cols-3">
+        {% for autre in autres %}
+          {% include "partiels/carte_annonce.html" with annonce=autre %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

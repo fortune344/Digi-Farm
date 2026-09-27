@@ -1,0 +1,9 @@
+# Dépendances Python de Digi-Farm (version Django).
+# Installer : python -m pip install -r digifarm/requirements.txt
+
+Django==5.2.11          # LTS
+Pillow==12.0.0          # compression des photos d'annonces (remplace sharp)
+
+# Développement et tests
+pytest==9.0.2
+pytest-django==4.11.1

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load icone digifarm %}
+
+{% block titre %}Commander {{ annonce.titre }} — Digi-Farm{% endblock %}
+
+{% block contenu %}
+<div class="mx-auto w-full max-w-2xl px-4 py-8 sm:py-12">
+
+  <a href="{{ annonce.get_absolute_url }}" class="bouton fantome petit mb-6 -ml-4">
+    {% icone "arrow-left" %}Retour au produit
+  </a>
+
+  <p class="surtitre">Commande</p>
+  <h1 class="titre mt-2 mb-8 text-3xl font-semibold">Finaliser votre achat</h1>
+
+  {# ------------------------------------------------------------ le produit #}
+  <div class="carte mb-6 flex gap-4 p-4">
+    {% with photo=annonce.photo_principale %}
+      <div class="size-20 shrink-0 overflow-hidden rounded-xl bg-muted">
+        {% if photo %}
+          <img src="{{ photo.image.url }}" alt="{{ annonce.titre }}"
+               width="160" height="160" class="size-full object-cover">
+        {% else %}
+          <span class="flex size-full items-center justify-center text-muted-foreground">
+            {% icone "image-off" classe="size-6" %}
+          </span>
+        {% endif %}
+      </div>
+    {% endwith %}
+    <div class="min-w-0 flex-1">
+      <p class="font-medium">{{ annonce.titre }}</p>
+      <p class="text-sm text-muted-foreground">
+        {{ annonce.agriculteur.profil.nom|default:"Agriculteur" }} · {{ annonce.region }}
+      </p>
+      <p class="mt-1 font-semibold text-primary">{{ annonce.prix|par_unite:annonce.unite }}</p>
+    </div>
+  </div>
+
+  <form method="post" class="carte p-6 shadow-sm" novalidate>
+    {% csrf_token %}
+    {% include "partiels/erreurs_formulaire.html" with formulaire=formulaire %}
+
+    {% include "partiels/champ.html" with champ=formulaire.quantite %}
+    {% include "partiels/champ_radio.html" with champ=formulaire.mode_livraison %}
+    {% include "partiels/champ.html" with champ=formulaire.adresse %}
+
+    {% if apercu %}
+      <div class="mb-4 rounded-xl bg-muted/60 p-4">
+        <p class="flex items-center justify-between text-sm">
+          <span class="text-muted-foreground">Total à payer</span>
+          <span class="titre text-xl font-semibold">{{ apercu.total|fcfa }}</span>
+        </p>
+        <p class="mt-1 text-xs text-muted-foreground">
+          Le total définitif est recalculé au moment du paiement, à partir du
+          prix affiché par le vendeur.
+        </p>
+      </div>
+    {% endif %}
+
+    <button type="submit" class="bouton primaire grand pleine-largeur">
+      {% icone "credit-card" %}Passer au paiement
+    </button>
+
+    <p class="mt-4 flex items-start gap-2 text-xs text-muted-foreground">
+      {% icone "shield-check" classe="size-4 shrink-0 text-primary" %}
+      Votre argent est conservé sous séquestre. Le vendeur n'est payé qu'après
+      que vous ayez confirmé la réception de la marchandise.
+    </p>
+  </form>
+</div>
+{% endblock %}

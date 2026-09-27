@@ -1,0 +1,13 @@
+{% load icone %}{% comment %} L'état de l'argent, dit en clair. {% endcomment %}
+{% if paiement.statut_sequestre == "sequestre" %}
+  <span class="badge attente" title="Les fonds sont bloqués jusqu'à la confirmation de réception">
+    {% icone "lock" %}Sous séquestre</span>
+{% elif paiement.statut_sequestre == "libere" %}
+  <span class="badge succes">{% icone "circle-check" %}Versé au vendeur</span>
+{% elif paiement.statut_sequestre == "rembourse" %}
+  <span class="badge neutre">{% icone "arrow-left" %}Remboursé</span>
+{% elif paiement.statut_sequestre == "collecte" %}
+  <span class="badge attente">{% icone "coins" %}Collecté</span>
+{% else %}
+  <span class="badge neutre">{% icone "clock" %}Paiement en attente</span>
+{% endif %}

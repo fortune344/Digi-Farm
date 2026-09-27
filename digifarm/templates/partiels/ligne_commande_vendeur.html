@@ -1,0 +1,84 @@
+{% load icone digifarm %}{% comment %}
+  Une commande dans la file du vendeur.
+
+  Le bouton qui fait avancer la commande est ICI, dans la ligne : le vendeur n'a
+  pas à ouvrir la commande pour la traiter. C'est le principal reproche fait à
+  l'ancienne version, où la liste ne servait qu'à cliquer ailleurs.
+{% endcomment %}
+<li class="carte p-4 {% if commande.statut == 'payee' %}border-primary/25{% endif %}">
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
+
+    {# ce qui a été commandé #}
+    <div class="min-w-0 flex-1">
+      <div class="flex flex-wrap items-center gap-2">
+        {% include "partiels/badge_statut_commande.html" with commande=commande %}
+        {% if commande.paiement %}
+          {% include "partiels/badge_sequestre.html" with paiement=commande.paiement %}
+        {% endif %}
+      </div>
+
+      <p class="mt-2 font-medium">
+        {% for ligne in commande.lignes.all %}
+          {{ ligne.quantite|nombre }} × {{ ligne.titre }}{% if not forloop.last %} · {% endif %}
+        {% empty %}Commande{% endfor %}
+      </p>
+
+      <p class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+        <span class="inline-flex items-center gap-1">
+          {% icone "user-round" classe="size-3.5" %}{{ commande.acheteur.profil.nom|default:"Acheteur" }}
+        </span>
+        <span class="inline-flex items-center gap-1">
+          {% icone "truck" classe="size-3.5" %}{{ commande.get_mode_livraison_display }}
+        </span>
+        <span>N° {{ commande.reference_courte }}</span>
+        <span>{{ commande.cree_le|date:"j F, H:i" }}</span>
+      </p>
+
+      {% if commande.mode_livraison == "transporteur" and commande.adresse_livraison %}
+        <p class="mt-2 flex items-start gap-1.5 rounded-lg bg-muted/60 px-2.5 py-2 text-xs text-muted-foreground">
+          {% icone "map-pin" classe="size-3.5 shrink-0 mt-0.5" %}{{ commande.adresse_livraison }}
+        </p>
+      {% endif %}
+    </div>
+
+    {# montant : ce que le vendeur touchera réellement #}
+    <div class="shrink-0 lg:w-40 lg:text-right">
+      <p class="titre text-xl font-semibold tabular-nums">
+        {{ commande.paiement.montant_net_vendeur|fcfa }}
+      </p>
+      <p class="text-xs text-muted-foreground">
+        pour vous · total {{ commande.total|fcfa }}
+      </p>
+    </div>
+
+    {# l'action, directement accessible #}
+    <div class="flex shrink-0 flex-col gap-2 sm:flex-row lg:w-56 lg:justify-end">
+      {% if commande.statut == "payee" %}
+        <form method="post" action="{% url 'commandes:preparer' commande.pk %}" class="contents">
+          {% csrf_token %}
+          <input type="hidden" name="retour" value="tableau_de_bord">
+          <button type="submit" class="bouton primaire petit">
+            {% icone "package-check" %}Marquer préparée
+          </button>
+        </form>
+      {% elif commande.statut == "preparee" %}
+        <form method="post" action="{% url 'commandes:expedier' commande.pk %}" class="contents">
+          {% csrf_token %}
+          <input type="hidden" name="retour" value="tableau_de_bord">
+          <button type="submit" class="bouton primaire petit">
+            {% icone "send" %}Marquer expédiée
+          </button>
+        </form>
+      {% elif commande.statut == "expediee" %}
+        <p class="flex items-center gap-1.5 text-xs text-muted-foreground lg:text-right">
+          {% icone "clock" classe="size-3.5 shrink-0" %}
+          En attente de la confirmation de l'acheteur
+        </p>
+      {% endif %}
+
+      <a href="{{ commande.get_absolute_url }}" class="bouton fantome petit">
+        Détail{% icone "chevron-right" %}
+      </a>
+    </div>
+  </div>
+</li>

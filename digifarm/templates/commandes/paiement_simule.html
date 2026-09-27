@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load icone digifarm %}
+
+{% block titre %}Paiement — Digi-Farm{% endblock %}
+
+{% block contenu %}
+<div class="mx-auto w-full max-w-md px-4 py-10 sm:py-16">
+
+  {# Cette page remplace le site de l'agrégateur (Flooz, Mixx, banque). Elle est
+     volontairement identifiée comme une simulation : personne ne doit croire
+     qu'un vrai paiement a lieu. #}
+  <div class="mb-6 flex items-start gap-2.5 rounded-xl bg-attente px-4 py-3 text-sm text-attente-foreground">
+    {% icone "triangle-alert" classe="size-4 shrink-0 mt-0.5" %}
+    <span>
+      <strong>Paiement simulé.</strong> Aucun agrégateur réel n'est branché pour
+      l'instant : aucun argent ne circule.
+    </span>
+  </div>
+
+  <div class="carte p-6 shadow-sm">
+    <p class="surtitre">Paiement sécurisé</p>
+    <p class="titre mt-3 text-3xl font-semibold tabular-nums">{{ paiement.montant|fcfa }}</p>
+    <p class="mt-1 text-sm text-muted-foreground">
+      Commande n° {{ commande.reference_courte }}
+    </p>
+
+    <form method="post" class="mt-6">
+      {% csrf_token %}
+
+      <fieldset>
+        <legend class="etiquette">Choisissez votre moyen de paiement</legend>
+        <div class="space-y-2">
+          {% for valeur, libelle in methodes %}
+            <label class="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-border
+                          px-4 py-3 text-sm transition-colors has-checked:border-primary
+                          has-checked:bg-accent hover:bg-muted">
+              <input type="radio" name="methode" value="{{ valeur }}"
+                     {% if forloop.first %}checked{% endif %} class="accent-[oklch(0.5_0.11_150)]">
+              {% if valeur == "carte" %}{% icone "credit-card" %}{% else %}{% icone "smartphone" %}{% endif %}
+              <span class="font-medium">{{ libelle }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <button type="submit" name="action" value="payer"
+              class="bouton primaire grand pleine-largeur mt-5">
+        {% icone "lock" %}Payer {{ paiement.montant|fcfa }}
+      </button>
+      <button type="submit" name="action" value="abandonner"
+              class="bouton fantome petit pleine-largeur mt-2">
+        Annuler le paiement
+      </button>
+    </form>
+  </div>
+
+  <p class="mt-5 flex items-start gap-2 text-xs text-muted-foreground">
+    {% icone "shield-check" classe="size-4 shrink-0 text-primary" %}
+    Le montant est mis sous séquestre : il n'est versé au vendeur qu'après votre
+    confirmation de réception.
+  </p>
+</div>
+{% endblock %}

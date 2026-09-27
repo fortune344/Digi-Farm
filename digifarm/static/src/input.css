@@ -1,0 +1,321 @@
+/* Feuille source Tailwind 4 de Digi-Farm.
+   Compilée vers static/css/site.css par `pnpm css:build` (ou css:watch en dev).
+
+   Direction artistique reprise telle quelle de l'app Next (« editorial luxury ») :
+   crème chaud, vert sauge, espresso ; titres en Fraunces ; boutons arrondis ;
+   easing « soft ». Voir CLAUDE.md § refonte design. */
+
+@import "tailwindcss";
+
+/* Fichiers scannés pour la génération des classes (gabarits Django). */
+@source "../../templates/**/*.html";
+@source "../../**/templates/**/*.html";
+@source "../../**/*.py";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Sémantique d'état, utilisée par les badges de statut et de séquestre. */
+  --color-succes: var(--succes);
+  --color-succes-foreground: var(--succes-foreground);
+  --color-attente: var(--attente);
+  --color-attente-foreground: var(--attente-foreground);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: var(--font-corps);
+  --font-display: var(--font-titre);
+
+  /* Easing « soft » premium. */
+  --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root {
+  --radius: 0.9rem;
+
+  /* Pile système pour le corps : zéro téléchargement, rendu immédiat sur
+     connexion lente. Seul Fraunces (titres) est chargé depuis le réseau. */
+  --font-corps: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-titre: "Fraunces", Georgia, "Times New Roman", serif;
+
+  /* Editorial luxury : crème chaud, vert sauge, espresso. */
+  --background: oklch(0.985 0.007 83);
+  --foreground: oklch(0.28 0.02 75);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.28 0.02 75);
+
+  --primary: oklch(0.5 0.11 150);
+  --primary-foreground: oklch(0.99 0.01 90);
+
+  --secondary: oklch(0.95 0.02 140);
+  --secondary-foreground: oklch(0.32 0.04 150);
+
+  --muted: oklch(0.96 0.008 83);
+  --muted-foreground: oklch(0.5 0.02 75);
+
+  --accent: oklch(0.94 0.04 145);
+  --accent-foreground: oklch(0.34 0.05 150);
+
+  --destructive: oklch(0.58 0.2 27);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  /* Succès (livré, libéré) et attente (sous séquestre, à préparer).
+     Contraste vérifié ≥ 4.5:1 sur leur fond respectif. */
+  --succes: oklch(0.93 0.05 150);
+  --succes-foreground: oklch(0.36 0.08 150);
+  --attente: oklch(0.94 0.06 85);
+  --attente-foreground: oklch(0.42 0.09 75);
+
+  /* Hairlines discrètes (pas de gris générique). */
+  --border: oklch(0.9 0.008 80);
+  --input: oklch(0.89 0.008 80);
+  --ring: oklch(0.5 0.11 150);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-corps);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+  }
+
+  /* Cible tactile minimale de 44 px sur les contrôles (accessibilité mobile). */
+  button,
+  [type="submit"],
+  [type="button"],
+  a.bouton {
+    touch-action: manipulation;
+  }
+
+  /* On ne supprime jamais l'anneau de focus : on le rend beau. */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+}
+
+@utility titre {
+  font-family: var(--font-titre);
+  font-optical-sizing: auto;
+  letter-spacing: -0.02em;
+}
+
+/* Entrée douce : translation + flou + fondu. */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.8s var(--ease-soft) both;
+}
+.delay-1 {
+  animation-delay: 0.08s;
+}
+.delay-2 {
+  animation-delay: 0.16s;
+}
+.delay-3 {
+  animation-delay: 0.24s;
+}
+
+/* Indicateur de requête HTMX en cours : le bouton se met en attente. */
+.htmx-request,
+.htmx-request.bouton {
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ------------------------------------------------------------------------- */
+/* Composants                                                                 */
+/*                                                                            */
+/* Définis ici une seule fois, pour que les gabarits restent lisibles :       */
+/* <a class="bouton primaire"> plutôt que douze classes utilitaires empilées. */
+/* Toutes les cibles tactiles font au moins 44 px de haut (accessibilité).    */
+/* ------------------------------------------------------------------------- */
+
+@layer components {
+  .bouton {
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2
+      rounded-full border border-transparent px-5 text-sm font-medium
+      whitespace-nowrap transition-all duration-200 select-none;
+    transition-timing-function: var(--ease-soft);
+  }
+  .bouton:disabled,
+  .bouton[aria-disabled="true"] {
+    @apply pointer-events-none opacity-50;
+  }
+  .bouton svg {
+    @apply size-4 shrink-0;
+  }
+
+  .bouton.primaire {
+    @apply bg-primary text-primary-foreground shadow-sm;
+  }
+  .bouton.primaire:hover {
+    @apply brightness-110;
+  }
+  .bouton.secondaire {
+    @apply bg-secondary text-secondary-foreground;
+  }
+  .bouton.secondaire:hover {
+    @apply bg-accent;
+  }
+  .bouton.contour {
+    @apply border-border bg-card text-foreground;
+  }
+  .bouton.contour:hover {
+    @apply bg-muted;
+  }
+  .bouton.fantome {
+    @apply text-muted-foreground;
+  }
+  .bouton.fantome:hover {
+    @apply bg-muted text-foreground;
+  }
+  .bouton.destructif {
+    @apply bg-destructive text-destructive-foreground;
+  }
+  .bouton.destructif:hover {
+    @apply brightness-110;
+  }
+  .bouton.petit {
+    @apply min-h-11 px-4 text-sm;
+  }
+  .bouton.grand {
+    @apply min-h-12 px-6 text-base;
+  }
+  .bouton.pleine-largeur {
+    @apply w-full;
+  }
+
+  .carte {
+    @apply rounded-2xl border border-border bg-card text-card-foreground;
+  }
+  .carte-titre {
+    @apply font-display text-base font-semibold tracking-tight;
+  }
+
+  /* Champs de formulaire : libellé visible au-dessus, aide et erreur dessous. */
+  .champ {
+    @apply min-h-11 w-full rounded-xl border border-input bg-card px-3.5 py-2.5
+      text-base text-foreground transition-colors;
+  }
+  .champ::placeholder {
+    @apply text-muted-foreground;
+  }
+  .champ:focus {
+    @apply border-ring outline-none;
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-ring) 22%, transparent);
+  }
+  .champ[aria-invalid="true"] {
+    @apply border-destructive;
+  }
+  textarea.champ {
+    @apply min-h-24 resize-y;
+  }
+  select.champ {
+    @apply cursor-pointer appearance-none bg-no-repeat pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23736b5e' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right 0.85rem center;
+    background-size: 1.1rem;
+  }
+
+  .etiquette {
+    @apply mb-1.5 block text-sm font-medium text-foreground;
+  }
+  .aide {
+    @apply mt-1.5 text-xs text-muted-foreground;
+  }
+  .erreur {
+    @apply mt-1.5 flex items-start gap-1.5 text-xs font-medium text-destructive;
+  }
+
+  /* Badges de statut. Jamais la couleur seule : toujours un libellé lisible. */
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1
+      text-xs font-medium whitespace-nowrap;
+  }
+  .badge svg {
+    @apply size-3.5 shrink-0;
+  }
+  .badge.neutre {
+    @apply bg-muted text-muted-foreground;
+  }
+  .badge.succes {
+    @apply bg-succes text-succes-foreground;
+  }
+  .badge.attente {
+    @apply bg-attente text-attente-foreground;
+  }
+  .badge.alerte {
+    @apply bg-destructive/12 text-destructive;
+  }
+  .badge.accent {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  /* Surtitre en petites capitales espacées (registre éditorial). */
+  .surtitre {
+    @apply text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase;
+  }
+}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load icone digifarm %}
+
+{% block titre %}Mon profil — Digi-Farm{% endblock %}
+
+{% block contenu %}
+<div class="mx-auto w-full max-w-2xl px-4 py-10 sm:py-14">
+  <div class="mb-8">
+    <p class="surtitre">Mon compte</p>
+    <h1 class="titre mt-2 text-3xl font-semibold">Profil</h1>
+  </div>
+
+  <div class="carte mb-6 flex flex-wrap items-center gap-4 p-5">
+    <span class="flex size-12 items-center justify-center rounded-full bg-accent text-accent-foreground">
+      {% icone "user-round" classe="size-6" %}
+    </span>
+    <div class="min-w-0 flex-1">
+      <p class="font-medium">{{ profil_utilisateur.nom }}</p>
+      <p class="text-sm text-muted-foreground">{{ user.email }}</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <span class="badge accent">{{ profil_utilisateur.get_role_display }}</span>
+      {% if profil_utilisateur.verifie %}
+        <span class="badge succes">{% icone "badge-check" %}Vérifié</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <form method="post" class="carte p-6 shadow-sm" novalidate>
+    {% csrf_token %}
+    {% include "partiels/erreurs_formulaire.html" with formulaire=formulaire %}
+    {% for champ in formulaire %}
+      {% include "partiels/champ.html" with champ=champ %}
+    {% endfor %}
+
+    <p class="aide mb-4">
+      Le type de compte ({{ profil_utilisateur.get_role_display|lower }}) ne se
+      modifie pas ici. Contactez-nous si vous devez en changer.
+    </p>
+
+    <button type="submit" class="bouton primaire">{% icone "check" %}Enregistrer</button>
+  </form>
+</div>
+{% endblock %}

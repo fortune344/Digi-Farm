@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load icone digifarm %}
+
+{% block titre %}Mes commandes — Digi-Farm{% endblock %}
+
+{% block contenu %}
+<div class="mx-auto w-full max-w-5xl px-4 py-8 sm:py-12">
+
+  <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="surtitre">Espace acheteur</p>
+      <h1 class="titre mt-2 text-3xl font-semibold sm:text-4xl">
+        Bonjour {{ profil_utilisateur.prenom }}
+      </h1>
+      <p class="mt-1.5 text-sm text-muted-foreground">
+        {{ nb_commandes }} commande{{ nb_commandes|pluralize }} au total
+      </p>
+    </div>
+    <a href="{% url 'annonces:marche' %}" class="bouton primaire">
+      {% icone "store" %}Parcourir le marché
+    </a>
+  </div>
+
+  {# ------------------------------------------------------------ tuiles bento #}
+  <div class="mb-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="carte p-5 shadow-sm {% if a_confirmer %}border-primary/30 bg-accent/40{% endif %} lg:col-span-2">
+      <p class="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+        {% icone "package-check" classe="size-4 text-primary" %}Réceptions à confirmer
+      </p>
+      <p class="titre mt-2 text-4xl font-semibold tabular-nums">{{ a_confirmer|length }}</p>
+      {% if a_confirmer %}
+        <p class="mt-1 text-sm text-muted-foreground">
+          Confirmez la réception pour que le vendeur soit payé.
+        </p>
+        <a href="#a-confirmer" class="bouton primaire petit mt-4">
+          Voir {% icone "arrow-right" %}
+        </a>
+      {% else %}
+        <p class="mt-1 text-sm text-muted-foreground">Rien à confirmer pour l'instant.</p>
+      {% endif %}
+    </div>
+
+    <div class="carte p-5 shadow-sm">
+      <p class="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+        {% icone "shield-check" classe="size-4 text-attente-foreground" %}Protégé
+      </p>
+      <p class="titre mt-2 text-2xl font-semibold tabular-nums">{{ protege|fcfa }}</p>
+      <p class="mt-1 text-xs text-muted-foreground">
+        Sous séquestre : le vendeur n'est payé qu'après votre confirmation.
+      </p>
+    </div>
+  </div>
+
+  {# ------------------------------------------------------- paiements en attente #}
+  {% if a_payer %}
+    <section class="mb-10">
+      <h2 class="titre mb-4 text-xl font-semibold">Paiements à finaliser</h2>
+      <ul class="space-y-3">
+        {% for commande in a_payer %}
+          <li class="carte flex flex-wrap items-center justify-between gap-3 p-4">
+            <div class="min-w-0">
+              <p class="font-medium">
+                {% for ligne in commande.lignes.all %}{{ ligne.quantite|nombre }} × {{ ligne.titre }}{% endfor %}
+              </p>
+              <p class="text-xs text-muted-foreground">N° {{ commande.reference_courte }}</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="font-semibold tabular-nums">{{ commande.total|fcfa }}</span>
+              <a href="{% url 'commandes:paiement_simule' commande.paiement.ref_agregateur %}" class="bouton primaire petit">
+                {% icone "credit-card" %}Payer
+              </a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {# ------------------------------------------------------------- à confirmer #}
+  <section id="a-confirmer" class="mb-10 scroll-mt-20">
+    <h2 class="titre mb-4 text-xl font-semibold">Commandes reçues à confirmer</h2>
+    {% if a_confirmer %}
+      <ul class="space-y-3">
+        {% for commande in a_confirmer %}
+          {% include "partiels/ligne_commande_acheteur.html" with commande=commande confirmable=True %}
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="carte flex flex-col items-center gap-3 px-6 py-12 text-center">
+        <span class="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          {% icone "package-check" classe="size-6" %}
+        </span>
+        <p class="font-medium">Aucune réception en attente</p>
+        <p class="max-w-sm text-sm text-muted-foreground">
+          Quand un vendeur expédie votre commande, elle apparaît ici pour que
+          vous confirmiez l'avoir bien reçue.
+        </p>
+      </div>
+    {% endif %}
+  </section>
+
+  {# ----------------------------------------------------------------- en cours #}
+  {% if en_cours %}
+    <section class="mb-10">
+      <h2 class="titre mb-4 text-xl font-semibold">En cours</h2>
+      <ul class="space-y-3">
+        {% for commande in en_cours %}
+          {% include "partiels/ligne_commande_acheteur.html" with commande=commande confirmable=False %}
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {# --------------------------------------------------------------- historique #}
+  {% if terminees %}
+    <details class="carte mb-10 px-5 py-4">
+      <summary class="flex cursor-pointer items-center gap-2 font-medium">
+        {% icone "list-checks" classe="size-4 text-muted-foreground" %}
+        Commandes terminées ({{ terminees|length }})
+      </summary>
+      <ul class="mt-4 divide-y divide-border">
+        {% for commande in terminees %}
+          <li class="flex items-center justify-between gap-3 py-3">
+            <div class="min-w-0">
+              <a href="{{ commande.get_absolute_url }}" class="text-sm font-medium hover:text-primary">
+                {% for ligne in commande.lignes.all %}{{ ligne.titre }}{% if not forloop.last %}, {% endif %}{% endfor %}
+              </a>
+              <p class="text-xs text-muted-foreground">{{ commande.cree_le|date:"j F Y" }}</p>
+            </div>
+            <div class="flex shrink-0 items-center gap-3">
+              {% include "partiels/badge_statut_commande.html" with commande=commande %}
+              <span class="text-sm font-semibold tabular-nums">{{ commande.total|fcfa }}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </details>
+  {% endif %}
+
+  {# -------------------------------------------------------------- suggestions #}
+  {% if suggestions %}
+    <section>
+      <h2 class="titre mb-4 text-xl font-semibold">À découvrir sur le marché</h2>
+      <div class="grid gap-4 sm:grid-cols-3">
+        {% for annonce in suggestions %}
+          {% include "partiels/carte_annonce.html" with annonce=annonce %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load icone digifarm %}
+
+{% block titre %}{% if annonce %}Modifier l'annonce{% else %}Nouvelle annonce{% endif %} — Digi-Farm{% endblock %}
+
+{% block contenu %}
+<div class="mx-auto w-full max-w-2xl px-4 py-8 sm:py-12">
+
+  <a href="{% url 'comptes:tableau_de_bord' %}" class="bouton fantome petit mb-6 -ml-4">
+    {% icone "arrow-left" %}Retour au tableau de bord
+  </a>
+
+  <div class="mb-8">
+    <p class="surtitre">{% if annonce %}Modification{% else %}Publication{% endif %}</p>
+    <h1 class="titre mt-2 text-3xl font-semibold">
+      {% if annonce %}Modifier l'annonce{% else %}Nouvelle annonce{% endif %}
+    </h1>
+    <p class="mt-2 text-sm text-muted-foreground">
+      Une annonce claire et photographiée se vend plus vite.
+    </p>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" class="carte p-6 shadow-sm" novalidate>
+    {% csrf_token %}
+    {% include "partiels/erreurs_formulaire.html" with formulaire=formulaire %}
+
+    {% include "partiels/champ.html" with champ=formulaire.titre %}
+    {% include "partiels/champ.html" with champ=formulaire.categorie %}
+    {% include "partiels/champ.html" with champ=formulaire.description %}
+
+    <div class="grid gap-x-4 sm:grid-cols-2">
+      {% include "partiels/champ.html" with champ=formulaire.prix %}
+      {% include "partiels/champ.html" with champ=formulaire.unite %}
+      {% include "partiels/champ.html" with champ=formulaire.quantite_dispo %}
+      {% include "partiels/champ.html" with champ=formulaire.region %}
+    </div>
+
+    {# ------------------------------------------------------- photos existantes #}
+    {% if annonce and annonce.photos.exists %}
+      <fieldset class="mb-4">
+        <legend class="etiquette">Photos actuelles</legend>
+        <p class="aide mb-2">Cochez celles que vous voulez retirer.</p>
+        <div class="grid grid-cols-3 gap-2 sm:grid-cols-5">
+          {% for photo in annonce.photos.all %}
+            <label class="relative cursor-pointer overflow-hidden rounded-xl border-2 border-transparent
+                          has-checked:border-destructive has-checked:opacity-60">
+              <img src="{{ photo.image.url }}" alt="Photo {{ forloop.counter }}"
+                   loading="lazy" width="120" height="120"
+                   class="aspect-square w-full object-cover">
+              <input type="checkbox" name="photo_supprimee" value="{{ photo.pk }}"
+                     class="absolute right-1.5 top-1.5 size-5 accent-[oklch(0.58_0.2_27)]">
+              <span class="sr-only">Supprimer la photo {{ forloop.counter }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+    {% endif %}
+
+    {% include "partiels/champ.html" with champ=formulaire.photos %}
+    {% include "partiels/champ.html" with champ=formulaire.statut %}
+
+    <div class="mt-2 flex flex-wrap gap-2">
+      <button type="submit" class="bouton primaire grand">
+        {% icone "check" %}{% if annonce %}Enregistrer{% else %}Publier l'annonce{% endif %}
+      </button>
+      <a href="{% url 'comptes:tableau_de_bord' %}" class="bouton fantome grand">Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

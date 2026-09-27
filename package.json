@@ -15,7 +15,10 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:seed": "node scripts/seed-demo.cjs",
-    "test:webhook": "node scripts/test-webhook.cjs"
+    "test:webhook": "node scripts/test-webhook.cjs",
+    "css:build": "tailwindcss -i digifarm/static/src/input.css -o digifarm/static/css/site.css --minify",
+    "css:watch": "tailwindcss -i digifarm/static/src/input.css -o digifarm/static/css/site.css --watch",
+    "icones": "node scripts/extraire-icones.mjs"
   },
   "dependencies": {
     "better-sqlite3": "12.10.0",
@@ -32,6 +35,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
+    "@tailwindcss/cli": "4.3.0",
     "@tailwindcss/postcss": "4.3.0",
     "@types/better-sqlite3": "7.6.13",
     "@types/node": "20.19.41",

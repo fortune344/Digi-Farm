@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load icone digifarm %}
+
+{% block contenu %}
+{# ------------------------------------------------------------------ bannière #}
+<section class="relative overflow-hidden border-b border-border/60">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:py-24">
+    <div class="max-w-2xl">
+      <p class="surtitre animate-fade-up">Marketplace agricole · Togo</p>
+      <h1 class="titre animate-fade-up delay-1 mt-4 text-4xl font-semibold text-balance sm:text-6xl">
+        La récolte, du champ à votre cuisine.
+      </h1>
+      <p class="animate-fade-up delay-2 mt-6 max-w-xl text-lg text-muted-foreground">
+        Digi-Farm relie les agriculteurs togolais aux acheteurs, sans
+        intermédiaire. Vous payez en mobile money, votre argent reste protégé
+        jusqu'à la réception.
+      </p>
+
+      <div class="animate-fade-up delay-3 mt-8 flex flex-wrap items-center gap-3">
+        <a href="{% url 'annonces:marche' %}" class="bouton primaire grand">
+          {% icone "store" %}Voir le marché
+        </a>
+        {% if not user.is_authenticated %}
+          <a href="{% url 'comptes:inscription' %}" class="bouton contour grand">
+            {% icone "sprout" %}Je suis agriculteur
+          </a>
+        {% elif profil.est_agriculteur %}
+          <a href="{% url 'annonces:nouvelle' %}" class="bouton contour grand">
+            {% icone "plus" %}Publier une annonce
+          </a>
+        {% endif %}
+      </div>
+
+      <p class="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
+        {% icone "shield-check" classe="size-4 text-primary" %}
+        {{ nb_annonces }} produit{{ nb_annonces|pluralize }} en ligne · paiement séquestré
+      </p>
+    </div>
+  </div>
+</section>
+
+{# -------------------------------------------------------- comment ça marche #}
+<section class="border-b border-border/60 bg-muted/30">
+  <div class="mx-auto max-w-6xl px-4 py-14">
+    <h2 class="titre text-2xl font-semibold">Comment votre argent est protégé</h2>
+    <div class="mt-8 grid gap-6 sm:grid-cols-3">
+      <div>
+        <span class="flex size-10 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+          {% icone "credit-card" classe="size-5" %}
+        </span>
+        <p class="mt-3 font-medium">1. Vous payez</p>
+        <p class="mt-1 text-sm text-muted-foreground">
+          Mobile money ou carte. Le montant est encaissé, mais pas encore versé
+          au vendeur.
+        </p>
+      </div>
+      <div>
+        <span class="flex size-10 items-center justify-center rounded-xl bg-attente text-attente-foreground">
+          {% icone "lock" classe="size-5" %}
+        </span>
+        <p class="mt-3 font-medium">2. L'argent est bloqué</p>
+        <p class="mt-1 text-sm text-muted-foreground">
+          Il reste sous séquestre le temps que l'agriculteur prépare et remette
+          votre commande.
+        </p>
+      </div>
+      <div>
+        <span class="flex size-10 items-center justify-center rounded-xl bg-succes text-succes-foreground">
+          {% icone "circle-check" classe="size-5" %}
+        </span>
+        <p class="mt-3 font-medium">3. Vous confirmez</p>
+        <p class="mt-1 text-sm text-muted-foreground">
+          À la réception, vous confirmez : le vendeur est payé. En cas de
+          problème, vous ouvrez un litige.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ------------------------------------------------------------------ arrivages #}
+{% if recentes %}
+  <section class="mx-auto max-w-6xl px-4 py-14">
+    <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <p class="surtitre">Derniers arrivages</p>
+        <h2 class="titre mt-2 text-2xl font-semibold">Fraîchement mis en vente</h2>
+      </div>
+      <a href="{% url 'annonces:marche' %}" class="bouton fantome petit">
+        Tout voir {% icone "arrow-right" %}
+      </a>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% for annonce in recentes %}
+        {% include "partiels/carte_annonce.html" with annonce=annonce %}
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+
+{# ---------------------------------------------------------------- catégories #}
+<section class="mx-auto max-w-6xl px-4 pb-16">
+  <h2 class="titre mb-5 text-xl font-semibold">Par catégorie</h2>
+  <div class="flex flex-wrap gap-2">
+    {% for valeur, libelle in categories %}
+      <a href="{% url 'annonces:marche' %}?categorie={{ valeur|urlencode }}"
+         class="bouton contour petit">{{ libelle }}</a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

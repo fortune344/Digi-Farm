@@ -1,0 +1,19 @@
+{% load icone digifarm %}{% comment %}
+  Rendu standard d'un champ : libellé VISIBLE au-dessus (jamais un simple
+  placeholder), aide en dessous, erreur juste sous le champ concerné.
+{% endcomment %}
+<div class="mb-4">
+  <label class="etiquette" for="{{ champ.id_for_label }}">
+    {{ champ.label }}
+    {% if champ.field.required %}<span class="text-destructive" aria-hidden="true">*</span>{% endif %}
+  </label>
+  {{ champ|avec_erreurs }}
+  {% if champ.help_text %}<p class="aide">{{ champ.help_text }}</p>{% endif %}
+  {% if champ.errors %}
+    <div id="{{ champ.auto_id }}-erreur">
+      {% for erreur in champ.errors %}
+        <p class="erreur">{% icone "circle-alert" classe="size-3.5 shrink-0 mt-0.5" %}{{ erreur }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
