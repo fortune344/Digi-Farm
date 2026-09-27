@@ -7,8 +7,13 @@
   <meta name="description" content="{% block description %}Achetez et vendez des produits agricoles en direct au Togo, avec paiement sécurisé et livraison.{% endblock %}">
   <meta name="theme-color" content="#fbf8f1">
 
-  {# Seul Fraunces (titres) vient du réseau ; le corps de texte utilise la pile
-     système, ce qui évite ~100 Ko au premier chargement sur connexion lente. #}
+  {% comment %}
+    Seul Fraunces (titres) vient du réseau ; le corps de texte utilise la pile
+    système, ce qui évite ~100 Ko au premier chargement sur connexion lente.
+
+    Rappel : la syntaxe {# … #} ne tient que sur UNE ligne. Un commentaire
+    multi-ligne écrit ainsi s'affiche littéralement dans la page.
+  {% endcomment %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap">

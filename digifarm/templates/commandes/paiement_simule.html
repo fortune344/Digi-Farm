@@ -6,9 +6,11 @@
 {% block contenu %}
 <div class="mx-auto w-full max-w-md px-4 py-10 sm:py-16">
 
-  {# Cette page remplace le site de l'agrégateur (Flooz, Mixx, banque). Elle est
-     volontairement identifiée comme une simulation : personne ne doit croire
-     qu'un vrai paiement a lieu. #}
+  {% comment %}
+    Cette page remplace le site de l'agrégateur (Flooz, Mixx, banque). Elle est
+    volontairement identifiée comme une simulation : personne ne doit croire
+    qu'un vrai paiement a lieu.
+  {% endcomment %}
   <div class="mb-6 flex items-start gap-2.5 rounded-xl bg-attente px-4 py-3 text-sm text-attente-foreground">
     {% icone "triangle-alert" classe="size-4 shrink-0 mt-0.5" %}
     <span>
