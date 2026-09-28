@@ -77,7 +77,8 @@ Le code vit dans **`digifarm/`** — voir `digifarm/README.md`. À la racine il 
 ## Ce qui a été décidé
 (Mettre à jour à chaque session — garder les 5 décisions les plus récentes.)
 - **28/09/2026 — dépôt GitHub PUBLIC et suppression complète de Next** :
-  https://github.com/fortune344/Digi-Farm, branche `django` par défaut (`master` reste local).
+  https://github.com/fortune344/Digi-Farm — **une seule branche, `main`**. Les branches de
+  travail `django` et `master` ont été supprimées : le projet ne vit pas sur une branche à part.
   Parité vérifiée (les 13 pages Next ont toutes leur équivalent Django, plus onze pages en plus),
   donc `src/`, `drizzle/`, `public/`, les configs TS/Biome/Vitest et les scripts `.cjs` sont
   **supprimés**. `package.json` réduit à la chaîne Tailwind + `pnpm icones`. Les 26 photos du
