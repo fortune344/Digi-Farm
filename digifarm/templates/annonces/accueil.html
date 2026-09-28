@@ -1,112 +1,304 @@
 {% extends "base.html" %}
-{% load icone digifarm %}
+{% load static icone digifarm %}
 
 {% block contenu %}
-{# ------------------------------------------------------------------ bannière #}
-<section class="relative overflow-hidden border-b border-border/60">
-  <div class="mx-auto max-w-6xl px-4 py-16 sm:py-24">
-    <div class="max-w-2xl">
-      <p class="surtitre animate-fade-up">Marketplace agricole · Togo</p>
-      <h1 class="titre animate-fade-up delay-1 mt-4 text-4xl font-semibold text-balance sm:text-6xl">
-        La récolte, du champ à votre cuisine.
-      </h1>
-      <p class="animate-fade-up delay-2 mt-6 max-w-xl text-lg text-muted-foreground">
-        Digi-Farm relie les agriculteurs togolais aux acheteurs, sans
-        intermédiaire. Vous payez en mobile money, votre argent reste protégé
-        jusqu'à la réception.
-      </p>
 
-      <div class="animate-fade-up delay-3 mt-8 flex flex-wrap items-center gap-3">
-        <a href="{% url 'annonces:marche' %}" class="bouton primaire grand">
-          {% icone "store" %}Voir le marché
-        </a>
-        {% if not user.is_authenticated %}
-          <a href="{% url 'comptes:inscription' %}" class="bouton contour grand">
-            {% icone "sprout" %}Je suis agriculteur
-          </a>
-        {% elif profil.est_agriculteur %}
-          <a href="{% url 'annonces:nouvelle' %}" class="bouton contour grand">
-            {% icone "plus" %}Publier une annonce
-          </a>
-        {% endif %}
+{% comment %}
+  Motif « marketplace » : héros centré sur la RECHERCHE, puis catégories,
+  arrivages, garanties, appel aux vendeurs. On vient ici chercher un produit,
+  pas lire une présentation — la barre de recherche est donc l'action première.
+{% endcomment %}
+
+{# ==================================================================== héros #}
+<section class="relative isolate overflow-hidden">
+  <img src="{% static 'img/accueil/heros.webp' %}" alt=""
+       width="1024" height="685" fetchpriority="high" decoding="async"
+       class="absolute inset-0 -z-10 size-full object-cover">
+  {# Voile dégradé : sans lui, le texte blanc ne serait pas lisible sur la photo. #}
+  <div class="absolute inset-0 -z-10 bg-gradient-to-t
+              from-[oklch(0.24_0.02_75/0.94)] via-[oklch(0.24_0.02_75/0.78)]
+              to-[oklch(0.24_0.02_75/0.55)]"></div>
+
+  <div class="mx-auto max-w-6xl px-4 py-20 sm:py-28">
+    <p class="surtitre animate-fade-up text-white/70">Marketplace agricole · Togo</p>
+
+    <h1 class="titre animate-fade-up delay-1 mt-4 max-w-3xl text-4xl font-semibold
+               text-balance text-white sm:text-6xl">
+      Achetez la récolte directement<br class="hidden sm:inline"> à l'agriculteur.
+    </h1>
+
+    <p class="animate-fade-up delay-2 mt-5 max-w-xl text-lg text-white/85">
+      Produits frais du Togo, prix fixé par le producteur, paiement mobile money
+      protégé jusqu'à la réception.
+    </p>
+
+    {# --- la recherche, action principale du héros --- #}
+    <form action="{% url 'annonces:marche' %}" method="get"
+          class="animate-fade-up delay-3 mt-8 max-w-2xl" role="search">
+      <div class="flex flex-col gap-2 rounded-2xl bg-card/95 p-2 shadow-xl backdrop-blur sm:flex-row">
+        <label for="recherche-accueil" class="sr-only">Quel produit cherchez-vous ?</label>
+        <div class="relative flex-1">
+          <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
+            {% icone "search" classe="size-5" %}
+          </span>
+          <input type="search" id="recherche-accueil" name="q" inputmode="search"
+                 placeholder="Maïs, tomate, igname, miel…"
+                 class="champ border-0 bg-transparent pl-11 text-base shadow-none focus:ring-0">
+        </div>
+        <label for="region-accueil" class="sr-only">Région</label>
+        <select id="region-accueil" name="region"
+                class="champ border-0 bg-transparent shadow-none sm:w-44">
+          <option value="">Toutes les régions</option>
+          {% for valeur, libelle in regions_liste %}
+            <option value="{{ valeur }}">{{ libelle }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="bouton primaire grand shrink-0">
+          {% icone "search" %}Rechercher
+        </button>
       </div>
+    </form>
 
-      <p class="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
-        {% icone "shield-check" classe="size-4 text-primary" %}
-        {{ nb_annonces }} produit{{ nb_annonces|pluralize }} en ligne · paiement séquestré
+    {# raccourcis : réduisent la friction quand on ne sait pas quoi taper #}
+    <div class="animate-fade-up delay-3 mt-4 flex flex-wrap items-center gap-2">
+      <span class="text-xs text-white/60">Recherches fréquentes :</span>
+      {% for suggestion in suggestions %}
+        <a href="{% url 'annonces:marche' %}?q={{ suggestion|urlencode }}"
+           class="rounded-full bg-white/12 px-3 py-1 text-xs font-medium text-white
+                  backdrop-blur transition-colors hover:bg-white/22">{{ suggestion }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ============================================================= statistiques #}
+<section class="border-b border-border/60 bg-card">
+  <div class="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-8 sm:grid-cols-4">
+    <div>
+      <p class="chiffre text-primary">{{ nb_annonces }}</p>
+      <p class="mt-1 text-sm text-muted-foreground">
+        produit{{ nb_annonces|pluralize }} en vente
+      </p>
+    </div>
+    <div>
+      <p class="chiffre text-primary">{{ nb_vendeurs }}</p>
+      <p class="mt-1 text-sm text-muted-foreground">
+        agriculteur{{ nb_vendeurs|pluralize }} inscrit{{ nb_vendeurs|pluralize }}
+      </p>
+    </div>
+    <div>
+      <p class="chiffre text-primary">{{ nb_regions }}</p>
+      <p class="mt-1 text-sm text-muted-foreground">régions couvertes</p>
+    </div>
+    <div>
+      <p class="chiffre text-primary">{{ commission }} %</p>
+      <p class="mt-1 text-sm text-muted-foreground">
+        de commission, et rien d'autre
       </p>
     </div>
   </div>
 </section>
 
-{# -------------------------------------------------------- comment ça marche #}
-<section class="border-b border-border/60 bg-muted/30">
-  <div class="mx-auto max-w-6xl px-4 py-14">
-    <h2 class="titre text-2xl font-semibold">Comment votre argent est protégé</h2>
-    <div class="mt-8 grid gap-6 sm:grid-cols-3">
+{# ================================================================ catégories #}
+<section class="lavis">
+  <div class="mx-auto max-w-6xl px-4 py-14 sm:py-16">
+    <div class="mb-7 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <span class="flex size-10 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-          {% icone "credit-card" classe="size-5" %}
-        </span>
-        <p class="mt-3 font-medium">1. Vous payez</p>
-        <p class="mt-1 text-sm text-muted-foreground">
-          Mobile money ou carte. Le montant est encaissé, mais pas encore versé
-          au vendeur.
-        </p>
+        <p class="surtitre">Parcourir</p>
+        <h2 class="titre mt-2 text-2xl font-semibold sm:text-3xl">Par catégorie</h2>
       </div>
-      <div>
-        <span class="flex size-10 items-center justify-center rounded-xl bg-attente text-attente-foreground">
-          {% icone "lock" classe="size-5" %}
-        </span>
-        <p class="mt-3 font-medium">2. L'argent est bloqué</p>
-        <p class="mt-1 text-sm text-muted-foreground">
-          Il reste sous séquestre le temps que l'agriculteur prépare et remette
-          votre commande.
-        </p>
-      </div>
-      <div>
-        <span class="flex size-10 items-center justify-center rounded-xl bg-succes text-succes-foreground">
-          {% icone "circle-check" classe="size-5" %}
-        </span>
-        <p class="mt-3 font-medium">3. Vous confirmez</p>
-        <p class="mt-1 text-sm text-muted-foreground">
-          À la réception, vous confirmez : le vendeur est payé. En cas de
-          problème, vous ouvrez un litige.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-{# ------------------------------------------------------------------ arrivages #}
-{% if recentes %}
-  <section class="mx-auto max-w-6xl px-4 py-14">
-    <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <p class="surtitre">Derniers arrivages</p>
-        <h2 class="titre mt-2 text-2xl font-semibold">Fraîchement mis en vente</h2>
-      </div>
-      <a href="{% url 'annonces:marche' %}" class="bouton fantome petit">
-        Tout voir {% icone "arrow-right" %}
+      <a href="{% url 'annonces:marche' %}" class="bouton contour petit">
+        Tout le marché {% icone "arrow-right" %}
       </a>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {% for annonce in recentes %}
-        {% include "partiels/carte_annonce.html" with annonce=annonce %}
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {% for categorie in categories %}
+        <a href="{% url 'annonces:marche' %}?categorie={{ categorie.valeur|urlencode }}"
+           class="tuile-categorie group">
+          <img src="{% static 'img/categories/'|add:categorie.slug|add:'.webp' %}"
+               alt="" width="560" height="448" loading="lazy" decoding="async">
+          <span class="absolute inset-0 bg-gradient-to-t
+                       from-[oklch(0.22_0.02_75/0.85)] to-transparent"></span>
+          <span>
+            {% icone categorie.icone classe="size-4 shrink-0" %}
+            {{ categorie.libelle }}
+          </span>
+        </a>
       {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ================================================================= arrivages #}
+{% if recentes %}
+  <section class="border-y border-border/60 bg-card/60">
+    <div class="mx-auto max-w-6xl px-4 py-14 sm:py-16">
+      <div class="mb-7 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="surtitre">Derniers arrivages</p>
+          <h2 class="titre mt-2 text-2xl font-semibold sm:text-3xl">
+            Fraîchement mis en vente
+          </h2>
+        </div>
+        <a href="{% url 'annonces:marche' %}" class="bouton fantome petit">
+          Voir les {{ nb_annonces }} produits {% icone "arrow-right" %}
+        </a>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {% for annonce in recentes %}
+          {% include "partiels/carte_annonce.html" with annonce=annonce %}
+        {% endfor %}
+      </div>
     </div>
   </section>
 {% endif %}
 
-{# ---------------------------------------------------------------- catégories #}
-<section class="mx-auto max-w-6xl px-4 pb-16">
-  <h2 class="titre mb-5 text-xl font-semibold">Par catégorie</h2>
-  <div class="flex flex-wrap gap-2">
-    {% for valeur, libelle in categories %}
-      <a href="{% url 'annonces:marche' %}?categorie={{ valeur|urlencode }}"
-         class="bouton contour petit">{{ libelle }}</a>
-    {% endfor %}
+{# ========================================================= confiance/sécurité #}
+<section class="mx-auto max-w-6xl px-4 py-14 sm:py-20">
+  <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+    <div>
+      <p class="surtitre">Pourquoi c'est sûr</p>
+      <h2 class="titre mt-2 text-2xl font-semibold sm:text-3xl text-balance">
+        Ni l'acheteur ni le vendeur ne prend le risque à la place de l'autre.
+      </h2>
+      <p class="mt-4 text-muted-foreground">
+        Dans une vente à distance entre deux personnes qui ne se connaissent pas,
+        quelqu'un doit payer ou expédier en premier. Chez nous, personne :
+        l'argent est <strong class="font-medium text-foreground">conservé par
+        Digi-Farm</strong> jusqu'à ce que l'acheteur confirme avoir reçu sa
+        marchandise.
+      </p>
+
+      <ol class="mt-8 space-y-5">
+        <li class="flex gap-4">
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-xl
+                       bg-accent text-accent-foreground">
+            {% icone "credit-card" classe="size-5" %}
+          </span>
+          <div>
+            <p class="font-medium">L'acheteur paie</p>
+            <p class="mt-0.5 text-sm text-muted-foreground">
+              Flooz, Mixx by Yas ou carte bancaire. Le montant est encaissé, mais
+              pas versé au vendeur.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-xl
+                       bg-attente text-attente-foreground">
+            {% icone "lock" classe="size-5" %}
+          </span>
+          <div>
+            <p class="font-medium">L'argent est bloqué</p>
+            <p class="mt-0.5 text-sm text-muted-foreground">
+              Le vendeur voit que la commande est payée — il prépare et expédie
+              en confiance, sans avancer quoi que ce soit.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-xl
+                       bg-succes text-succes-foreground">
+            {% icone "circle-check" classe="size-5" %}
+          </span>
+          <div>
+            <p class="font-medium">L'acheteur confirme, le vendeur est payé</p>
+            <p class="mt-0.5 text-sm text-muted-foreground">
+              À la réception. Si quelque chose ne va pas, un litige bloque le
+              versement et nous examinons le dossier.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <a href="{% url 'core:faq' %}" class="bouton contour mt-8">
+        {% icone "info" %}Questions fréquentes
+      </a>
+    </div>
+
+    <div class="relative overflow-hidden rounded-3xl">
+      <img src="{% static 'img/accueil/panneau.webp' %}"
+           alt="Étal de tomates fraîches sur un marché"
+           width="1032" height="1080" loading="lazy" decoding="async"
+           class="aspect-4/5 w-full object-cover">
+      <div class="absolute inset-x-4 bottom-4 rounded-2xl bg-card/92 p-4 backdrop-blur">
+        <p class="flex items-center gap-2 text-sm font-medium">
+          {% icone "shield-check" classe="size-4 text-primary" %}
+          Paiement séquestré sur 100 % des commandes
+        </p>
+        <p class="mt-1 text-xs text-muted-foreground">
+          Aucun versement automatique : c'est toujours l'acheteur qui déclenche
+          le paiement du vendeur.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ========================================================= appel aux vendeurs #}
+<section class="relative isolate overflow-hidden">
+  <img src="{% static 'img/accueil/vendeur.webp' %}" alt=""
+       width="1280" height="853" loading="lazy" decoding="async"
+       class="absolute inset-0 -z-10 size-full object-cover">
+  <div class="absolute inset-0 -z-10 bg-[oklch(0.28_0.03_150/0.88)]"></div>
+
+  <div class="mx-auto max-w-4xl px-4 py-16 text-center sm:py-20">
+    <p class="surtitre text-white/70">Vous cultivez ?</p>
+    <h2 class="titre mt-3 text-3xl font-semibold text-balance text-white sm:text-4xl">
+      Vendez votre récolte au juste prix, sans intermédiaire.
+    </h2>
+    <p class="mx-auto mt-4 max-w-xl text-white/80">
+      Vous fixez votre prix et votre quantité. Nous prenons {{ commission }} %
+      sur une vente conclue — rien à l'inscription, rien pour publier une annonce.
+    </p>
+
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      {% if not user.is_authenticated %}
+        <a href="{% url 'comptes:inscription' %}" class="bouton primaire grand">
+          {% icone "sprout" %}Créer mon compte vendeur
+        </a>
+        <a href="{% url 'core:a_propos' %}" class="bouton grand border-white/30 text-white hover:bg-white/10">
+          Comment ça marche
+        </a>
+      {% elif profil.est_agriculteur %}
+        <a href="{% url 'annonces:nouvelle' %}" class="bouton primaire grand">
+          {% icone "plus" %}Publier une annonce
+        </a>
+      {% else %}
+        <a href="{% url 'annonces:marche' %}" class="bouton primaire grand">
+          {% icone "store" %}Parcourir le marché
+        </a>
+      {% endif %}
+    </div>
+
+    <dl class="mx-auto mt-12 grid max-w-2xl grid-cols-1 gap-6 text-left sm:grid-cols-3">
+      <div>
+        <dt class="flex items-center gap-2 text-sm font-medium text-white">
+          {% icone "smartphone" classe="size-4" %}Depuis un téléphone
+        </dt>
+        <dd class="mt-1 text-xs text-white/70">
+          Publiez une annonce avec une photo, en quelques minutes.
+        </dd>
+      </div>
+      <div>
+        <dt class="flex items-center gap-2 text-sm font-medium text-white">
+          {% icone "wallet" classe="size-4" %}Payé sur mobile money
+        </dt>
+        <dd class="mt-1 text-xs text-white/70">
+          Le versement arrive dès que l'acheteur confirme la réception.
+        </dd>
+      </div>
+      <div>
+        <dt class="flex items-center gap-2 text-sm font-medium text-white">
+          {% icone "scale" classe="size-4" %}Vos prix, vos unités
+        </dt>
+        <dd class="mt-1 text-xs text-white/70">
+          Au kilo, au sac ou à la tonne — comme vous vendez déjà.
+        </dd>
+      </div>
+    </dl>
   </div>
 </section>
 {% endblock %}

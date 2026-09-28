@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load icone %}
+
+{% block titre %}Politique de confidentialité — Digi-Farm{% endblock %}
+{% block description %}Quelles données Digi-Farm collecte, pourquoi, combien de temps elles sont conservées, et comment les faire supprimer.{% endblock %}
+
+{% block contenu %}
+<div class="mx-auto max-w-3xl px-4 py-14">
+
+  <p class="surtitre">Vos données</p>
+  <h1 class="titre mt-3 text-3xl font-semibold sm:text-4xl">Politique de confidentialité</h1>
+  <p class="mt-3 text-sm text-muted-foreground">
+    Dernière mise à jour : {% now "j F Y" %}
+  </p>
+
+  <div class="mt-6 flex items-start gap-2.5 rounded-xl bg-attente px-4 py-3 text-sm text-attente-foreground">
+    {% icone "triangle-alert" classe="size-4 shrink-0 mt-0.5" %}
+    <span>
+      <strong>Document de travail.</strong> Il décrit fidèlement ce que fait le
+      site aujourd'hui, mais doit être relu par un juriste avant une ouverture
+      commerciale.
+    </span>
+  </div>
+
+  <div class="mt-10 space-y-10 text-muted-foreground">
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">En une phrase</h2>
+      <p class="mt-3">
+        Nous collectons le minimum nécessaire pour qu'une vente se déroule
+        correctement. Nous ne revendons aucune donnée, nous ne faisons pas de
+        publicité ciblée, et il n'y a aucun traceur publicitaire sur ce site.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">Ce que nous collectons</h2>
+
+      <div class="mt-4 space-y-3">
+        <div class="carte p-4">
+          <p class="font-medium text-foreground">Votre compte</p>
+          <p class="mt-1 text-sm">
+            Nom, adresse e-mail, téléphone (facultatif), région, type de compte.
+            Nécessaires pour vous identifier et permettre à l'autre partie d'une
+            vente de vous joindre.
+          </p>
+        </div>
+        <div class="carte p-4">
+          <p class="font-medium text-foreground">Vos annonces et commandes</p>
+          <p class="mt-1 text-sm">
+            Produits publiés, photos, prix, quantités, historique des commandes et
+            des paiements. Nécessaires au fonctionnement même du service.
+          </p>
+        </div>
+        <div class="carte p-4">
+          <p class="font-medium text-foreground">Vos messages</p>
+          <p class="mt-1 text-sm">
+            Ce que vous nous écrivez via le formulaire de contact, pour pouvoir
+            vous répondre.
+          </p>
+        </div>
+        <div class="carte p-4">
+          <p class="font-medium text-foreground">Votre mot de passe</p>
+          <p class="mt-1 text-sm">
+            Il n'est <strong class="text-foreground">jamais</strong> stocké en
+            clair : seule une empreinte cryptographique est conservée. Même nous
+            ne pouvons pas le lire.
+          </p>
+        </div>
+      </div>
+
+      <p class="mt-4">
+        Nous ne collectons pas votre position, ne lisons pas vos contacts et
+        n'installons aucun mouchard publicitaire.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">Cookies</h2>
+      <p class="mt-3">
+        Un seul cookie est déposé : celui qui maintient votre session ouverte
+        quand vous êtes connecté. Il est strictement nécessaire au service, il
+        n'est pas partagé, et il disparaît à la déconnexion.
+      </p>
+      <p class="mt-3">
+        Aucun cookie de mesure d'audience ni de publicité n'est utilisé.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">Qui voit quoi</h2>
+      <ul class="mt-3 space-y-2">
+        <li class="flex gap-2.5">{% icone "check" classe="size-4 shrink-0 mt-1 text-primary" %}
+          <span>Votre nom et votre région apparaissent publiquement sur vos
+            annonces si vous êtes vendeur.</span></li>
+        <li class="flex gap-2.5">{% icone "check" classe="size-4 shrink-0 mt-1 text-primary" %}
+          <span>Lors d'une commande, l'acheteur et le vendeur voient mutuellement
+            leur nom, et l'adresse de livraison si elle a été fournie.</span></li>
+        <li class="flex gap-2.5">{% icone "check" classe="size-4 shrink-0 mt-1 text-primary" %}
+          <span>Votre adresse e-mail n'est jamais affichée publiquement.</span></li>
+        <li class="flex gap-2.5">{% icone "check" classe="size-4 shrink-0 mt-1 text-primary" %}
+          <span>Une commande n'est visible que par ses deux parties et par un
+            administrateur.</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">Partage avec des tiers</h2>
+      <p class="mt-3">
+        Aucune donnée n'est vendue ni louée. Lorsqu'un agrégateur de paiement sera
+        raccordé, les informations strictement nécessaires à la transaction
+        (montant, référence de commande) lui seront transmises — cette page sera
+        alors mise à jour pour le nommer.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">Durée de conservation</h2>
+      <p class="mt-3">
+        Les données de compte sont conservées tant que le compte existe. Les
+        commandes et leur historique de paiement sont conservés plus longtemps,
+        pour des raisons comptables et en cas de litige ultérieur.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">Vos droits</h2>
+      <p class="mt-3">
+        Vous pouvez consulter et corriger vos informations depuis votre profil.
+        Pour obtenir une copie de vos données ou demander la suppression de votre
+        compte,
+        <a href="{% url 'core:contact' %}" class="font-medium text-primary underline-offset-4 hover:underline">écrivez-nous</a> :
+        nous traitons la demande sous 30 jours.
+      </p>
+      <p class="mt-3">
+        La suppression n'est possible que si aucune commande n'est en cours : nous
+        ne pouvons pas effacer une vente dont l'argent est encore sous séquestre.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">Sécurité</h2>
+      <p class="mt-3">
+        Les mots de passe sont hachés, les sessions expirent, et l'accès aux
+        données est vérifié côté serveur à chaque requête : un utilisateur ne peut
+        pas consulter les commandes ni les annonces d'un autre, même en modifiant
+        une adresse dans son navigateur.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">Contact</h2>
+      <p class="mt-3">
+        Pour toute question sur vos données :
+        <a href="mailto:contact@digifarm.tg" class="font-medium text-primary underline-offset-4 hover:underline">contact@digifarm.tg</a>.
+      </p>
+    </section>
+  </div>
+
+  <div class="filet my-10"></div>
+
+  <p class="text-sm text-muted-foreground">
+    Voir aussi :
+    <a href="{% url 'core:conditions' %}" class="text-primary hover:underline">conditions d'utilisation</a>
+    ·
+    <a href="{% url 'core:faq' %}" class="text-primary hover:underline">questions fréquentes</a>
+  </p>
+</div>
+{% endblock %}

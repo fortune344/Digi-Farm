@@ -1,13 +1,101 @@
 {% load icone %}
-<footer class="mt-16 border-t border-border/60 bg-muted/40">
-  <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-    <p class="flex items-center gap-2">
-      {% icone "sprout" classe="size-4 text-primary" %}
-      Digi-Farm — la marketplace agricole du Togo
-    </p>
-    <p class="flex items-center gap-1.5">
-      {% icone "shield-check" classe="size-4 text-primary" %}
-      Paiement séquestré jusqu'à réception
-    </p>
+{% comment %}
+  Pied de page. Ce n'est pas de la décoration : c'est là qu'on cherche les
+  mentions légales, un moyen de contact et la preuve qu'un humain tient le site.
+{% endcomment %}
+<footer class="mt-20 border-t border-border/60 bg-card">
+  <div class="mx-auto max-w-6xl px-4 py-12">
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+
+      {# --- marque --- #}
+      <div class="lg:col-span-1">
+        <a href="{% url 'annonces:accueil' %}" class="inline-flex items-center gap-2 font-semibold">
+          <span class="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            {% icone "sprout" classe="size-5" %}
+          </span>
+          <span class="text-lg tracking-tight">Digi-Farm</span>
+        </a>
+        <p class="mt-3 text-sm text-muted-foreground">
+          La marketplace qui relie les agriculteurs du Togo aux acheteurs, sans
+          intermédiaire et avec un paiement protégé.
+        </p>
+        <p class="mt-4 flex items-center gap-2 text-xs font-medium text-primary">
+          {% icone "shield-check" classe="size-4" %}
+          Paiement séquestré jusqu'à réception
+        </p>
+      </div>
+
+      {# --- acheter --- #}
+      <div>
+        <h2 class="text-sm font-semibold">Acheter</h2>
+        <ul class="mt-3 space-y-2 text-sm text-muted-foreground">
+          <li><a href="{% url 'annonces:marche' %}" class="hover:text-primary">Tout le marché</a></li>
+          <li><a href="{% url 'annonces:marche' %}?categorie=C%C3%A9r%C3%A9ales" class="hover:text-primary">Céréales</a></li>
+          <li><a href="{% url 'annonces:marche' %}?categorie=L%C3%A9gumes" class="hover:text-primary">Légumes</a></li>
+          <li><a href="{% url 'annonces:marche' %}?categorie=Fruits" class="hover:text-primary">Fruits</a></li>
+          <li><a href="{% url 'annonces:marche' %}?tri=prix_croissant" class="hover:text-primary">Les moins chers</a></li>
+        </ul>
+      </div>
+
+      {# --- vendre --- #}
+      <div>
+        <h2 class="text-sm font-semibold">Vendre</h2>
+        <ul class="mt-3 space-y-2 text-sm text-muted-foreground">
+          {% if user.is_authenticated and profil.est_agriculteur %}
+            <li><a href="{% url 'annonces:nouvelle' %}" class="hover:text-primary">Publier une annonce</a></li>
+            <li><a href="{% url 'comptes:tableau_de_bord' %}" class="hover:text-primary">Mes ventes</a></li>
+          {% else %}
+            <li><a href="{% url 'comptes:inscription' %}" class="hover:text-primary">Devenir vendeur</a></li>
+          {% endif %}
+          <li><a href="{% url 'core:a_propos' %}" class="hover:text-primary">Comment ça marche</a></li>
+          <li><a href="{% url 'core:faq' %}#frais" class="hover:text-primary">Frais et commission</a></li>
+          <li><a href="{% url 'core:faq' %}#paiement" class="hover:text-primary">Comment je suis payé</a></li>
+        </ul>
+      </div>
+
+      {# --- aide et contact --- #}
+      <div>
+        <h2 class="text-sm font-semibold">Aide</h2>
+        <ul class="mt-3 space-y-2 text-sm text-muted-foreground">
+          <li><a href="{% url 'core:faq' %}" class="hover:text-primary">Questions fréquentes</a></li>
+          <li><a href="{% url 'core:contact' %}" class="hover:text-primary">Nous contacter</a></li>
+          <li>
+            <a href="tel:+22890000000" class="inline-flex items-center gap-1.5 hover:text-primary">
+              {% icone "phone" classe="size-3.5" %}+228 90 00 00 00
+            </a>
+          </li>
+          <li>
+            <a href="mailto:contact@digifarm.tg" class="inline-flex items-center gap-1.5 hover:text-primary">
+              {% icone "mail" classe="size-3.5" %}contact@digifarm.tg
+            </a>
+          </li>
+          <li class="flex items-start gap-1.5 pt-1">
+            {% icone "map-pin" classe="size-3.5 shrink-0 mt-0.5" %}
+            <span>Lomé, Togo</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="filet my-8"></div>
+
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-xs text-muted-foreground">
+        © {% now "Y" %} Digi-Farm. Tous droits réservés.
+      </p>
+      <ul class="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+        <li><a href="{% url 'core:conditions' %}" class="hover:text-primary">Conditions d'utilisation</a></li>
+        <li><a href="{% url 'core:confidentialite' %}" class="hover:text-primary">Confidentialité</a></li>
+        <li><a href="{% url 'core:a_propos' %}" class="hover:text-primary">À propos</a></li>
+      </ul>
+    </div>
+
+    {# Moyens de paiement acceptés : rassure avant même d'avoir cliqué. #}
+    <div class="mt-6 flex flex-wrap items-center gap-2">
+      <span class="text-xs text-muted-foreground">Paiement :</span>
+      <span class="badge neutre">{% icone "smartphone" %}Flooz</span>
+      <span class="badge neutre">{% icone "smartphone" %}Mixx by Yas</span>
+      <span class="badge neutre">{% icone "credit-card" %}Carte bancaire</span>
+    </div>
   </div>
 </footer>

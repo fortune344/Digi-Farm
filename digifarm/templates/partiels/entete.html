@@ -1,37 +1,130 @@
 {% load icone %}
-<header class="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-  <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-    <a href="{% url 'annonces:accueil' %}" class="inline-flex items-center gap-2 font-semibold">
+{% comment %}
+  En-tête du site.
+
+  Le menu mobile est un <details> : il fonctionne sans JavaScript, se ferme à la
+  touche Échap et reste accessible au clavier. Pas besoin d'un composant JS pour
+  ouvrir une liste de liens.
+
+  L'état actif est calculé depuis request.path — la navigation doit toujours dire
+  où l'on se trouve.
+{% endcomment %}
+<header class="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl">
+  <div class="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4">
+
+    <a href="{% url 'annonces:accueil' %}"
+       class="inline-flex shrink-0 items-center gap-2 font-semibold">
       <span class="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
         {% icone "sprout" classe="size-5" %}
       </span>
       <span class="text-lg tracking-tight">Digi-Farm</span>
     </a>
 
-    <nav class="flex items-center gap-1 sm:gap-2" aria-label="Navigation principale">
-      <a href="{% url 'annonces:marche' %}" class="bouton fantome petit">
-        {% icone "store" %}<span class="hidden sm:inline">Marché</span>
+    {# ------------------------------------------------- navigation de bureau #}
+    <nav class="ml-4 hidden flex-1 items-center gap-1 lg:flex" aria-label="Navigation principale">
+      <a href="{% url 'annonces:marche' %}"
+         class="bouton fantome petit {% if '/marche' in request.path %}bg-muted text-foreground{% endif %}"
+         {% if '/marche' in request.path %}aria-current="page"{% endif %}>
+        {% icone "store" %}Marché
+      </a>
+      <a href="{% url 'core:a_propos' %}"
+         class="bouton fantome petit {% if '/a-propos' in request.path %}bg-muted text-foreground{% endif %}"
+         {% if '/a-propos' in request.path %}aria-current="page"{% endif %}>
+        Comment ça marche
+      </a>
+      <a href="{% url 'core:faq' %}"
+         class="bouton fantome petit {% if '/faq' in request.path %}bg-muted text-foreground{% endif %}"
+         {% if '/faq' in request.path %}aria-current="page"{% endif %}>
+        Aide
+      </a>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-1 sm:gap-2">
+
+      {# lien marché visible sur petit écran, où la nav est repliée #}
+      <a href="{% url 'annonces:marche' %}" class="bouton fantome petit lg:hidden">
+        {% icone "search" %}<span class="sr-only">Rechercher sur le marché</span>
       </a>
 
       {% if user.is_authenticated %}
-        <a href="{% url 'comptes:tableau_de_bord' %}" class="bouton fantome petit">
+        {% if profil.est_agriculteur %}
+          <a href="{% url 'annonces:nouvelle' %}" class="bouton primaire petit hidden sm:inline-flex">
+            {% icone "plus" %}Vendre
+          </a>
+        {% endif %}
+        <a href="{% url 'comptes:tableau_de_bord' %}"
+           class="bouton fantome petit {% if '/tableau-de-bord' in request.path %}bg-muted text-foreground{% endif %}">
           {% icone "layout-dashboard" %}<span class="hidden sm:inline">Tableau de bord</span>
         </a>
-        <a href="{% url 'comptes:profil' %}" class="bouton fantome petit" title="Mon profil">
-          {% icone "user-round" %}<span class="sr-only">Mon profil</span>
-        </a>
-        <form method="post" action="{% url 'comptes:deconnexion' %}">
-          {% csrf_token %}
-          <button type="submit" class="bouton fantome petit" title="Se déconnecter">
-            {% icone "log-out" %}<span class="sr-only">Se déconnecter</span>
-          </button>
-        </form>
+
+        {# menu du compte : déplié au clic, sans JavaScript #}
+        <details class="relative">
+          <summary class="bouton fantome petit list-none marker:content-none" aria-label="Mon compte">
+            {% icone "user-round" %}{% icone "chevron-down" classe="size-3.5 opacity-60" %}
+          </summary>
+          <div class="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-border bg-card p-1.5 shadow-lg">
+            <p class="truncate px-3 py-2 text-xs text-muted-foreground">
+              {{ profil.nom|default:user.email }}
+            </p>
+            <div class="filet my-1"></div>
+            <a href="{% url 'comptes:profil' %}"
+               class="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm hover:bg-muted">
+              {% icone "user-round" %}Mon profil
+            </a>
+            <a href="{% url 'core:contact' %}"
+               class="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm hover:bg-muted">
+              {% icone "message-circle" %}Nous contacter
+            </a>
+            <div class="filet my-1"></div>
+            <form method="post" action="{% url 'comptes:deconnexion' %}">
+              {% csrf_token %}
+              <button type="submit"
+                      class="flex min-h-11 w-full items-center gap-2 rounded-lg px-3 text-sm
+                             text-destructive hover:bg-destructive/10">
+                {% icone "log-out" %}Se déconnecter
+              </button>
+            </form>
+          </div>
+        </details>
       {% else %}
         <a href="{% url 'comptes:connexion' %}" class="bouton fantome petit">Connexion</a>
         <a href="{% url 'comptes:inscription' %}" class="bouton primaire petit">
-          <span class="hidden sm:inline">Créer un compte</span><span class="sm:hidden">S'inscrire</span>
+          <span class="hidden sm:inline">Créer un compte</span>
+          <span class="sm:hidden">S'inscrire</span>
         </a>
       {% endif %}
-    </nav>
+
+      {# ----------------------------------------------- menu mobile (liens) #}
+      <details class="relative lg:hidden">
+        <summary class="bouton fantome petit list-none marker:content-none" aria-label="Menu">
+          {% icone "menu" classe="size-5" %}
+        </summary>
+        <div class="absolute right-0 z-50 mt-2 w-60 rounded-xl border border-border bg-card p-1.5 shadow-lg">
+          <a href="{% url 'annonces:marche' %}"
+             class="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm hover:bg-muted">
+            {% icone "store" %}Le marché
+          </a>
+          <a href="{% url 'core:a_propos' %}"
+             class="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm hover:bg-muted">
+            {% icone "info" %}Comment ça marche
+          </a>
+          <a href="{% url 'core:faq' %}"
+             class="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm hover:bg-muted">
+            {% icone "circle-alert" %}Questions fréquentes
+          </a>
+          <a href="{% url 'core:contact' %}"
+             class="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm hover:bg-muted">
+            {% icone "message-circle" %}Nous contacter
+          </a>
+          {% if user.is_authenticated and profil.est_agriculteur %}
+            <div class="filet my-1"></div>
+            <a href="{% url 'annonces:nouvelle' %}"
+               class="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-primary hover:bg-muted">
+              {% icone "plus" %}Publier une annonce
+            </a>
+          {% endif %}
+        </div>
+      </details>
+    </div>
   </div>
 </header>

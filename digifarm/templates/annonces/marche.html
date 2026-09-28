@@ -1,19 +1,52 @@
 {% extends "base.html" %}
-{% load icone digifarm %}
+{% load static icone digifarm %}
 
 {% block titre %}Le marché — Digi-Farm{% endblock %}
 {% block description %}Parcourez les produits agricoles en vente au Togo : céréales, légumes, tubercules, fruits.{% endblock %}
 
 {% block contenu %}
-<div class="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
 
-  <div class="mb-6">
+{# ------------------------------------------------------- bandeau et catégories #}
+<section class="lavis grain relative border-b border-border/60">
+  <div class="relative z-10 mx-auto max-w-6xl px-4 pb-6 pt-10 sm:pt-14">
     <p class="surtitre">Le marché</p>
-    <h1 class="titre mt-2 text-3xl font-semibold sm:text-4xl">Produits en vente</h1>
+    <h1 class="titre mt-2 text-3xl font-semibold sm:text-4xl">
+      {% if categorie_active %}{{ categorie_active }}
+      {% elif recherche %}« {{ recherche }} »
+      {% else %}Produits en vente{% endif %}
+    </h1>
     <p class="mt-1.5 text-sm text-muted-foreground">
-      {{ total }} annonce{{ total|pluralize }}{% if filtres_actifs %} correspondant à votre recherche{% endif %}
+      {{ total }} annonce{{ total|pluralize }}{% if region_active %} en région {{ region_active }}{% endif %}{% if filtres_actifs %} correspondant à votre recherche{% endif %}
     </p>
+
+    {# Pastilles illustrées : on choisit plus vite en voyant le produit. #}
+    <div class="-mx-4 mt-6 overflow-x-auto px-4 pb-1">
+      <div class="flex w-max gap-2">
+        <a href="{% url 'annonces:marche' %}"
+           class="bouton petit shrink-0 {% if not categorie_active %}primaire{% else %}contour{% endif %}">
+          Tout
+        </a>
+        {% for categorie in categories %}
+          <a href="?categorie={{ categorie.valeur|urlencode }}"
+             class="flex shrink-0 items-center gap-2 rounded-full border py-1 pl-1 pr-4 text-sm
+                    font-medium transition-colors
+                    {% if categorie.valeur == categorie_active %}
+                      border-primary bg-primary text-primary-foreground
+                    {% else %}
+                      border-border bg-card hover:bg-muted
+                    {% endif %}">
+            <img src="{% static 'img/categories/'|add:categorie.slug|add:'.webp' %}"
+                 alt="" width="56" height="56" loading="lazy" decoding="async"
+                 class="size-8 rounded-full object-cover">
+            {{ categorie.libelle }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
   </div>
+</section>
+
+<div class="mx-auto w-full max-w-6xl px-4 py-8 sm:py-10">
 
   {# Filtres en GET : l'URL reste partageable et le retour navigateur marche. #}
   <form method="get" class="carte mb-8 p-4">
@@ -27,8 +60,9 @@
         <label class="etiquette" for="categorie">Catégorie</label>
         <select id="categorie" name="categorie" class="champ">
           <option value="">Toutes</option>
-          {% for valeur, libelle in categories %}
-            <option value="{{ valeur }}" {% if valeur == categorie_active %}selected{% endif %}>{{ libelle }}</option>
+          {% for categorie in categories %}
+            <option value="{{ categorie.valeur }}"
+                    {% if categorie.valeur == categorie_active %}selected{% endif %}>{{ categorie.libelle }}</option>
           {% endfor %}
         </select>
       </div>

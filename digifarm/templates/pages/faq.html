@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+{% load icone %}
+
+{% block titre %}Questions fréquentes — Digi-Farm{% endblock %}
+{% block description %}Paiement, séquestre, livraison, commission, litiges : les réponses aux questions qu'on nous pose le plus souvent.{% endblock %}
+
+{% block contenu %}
+<section class="lavis border-b border-border/60">
+  <div class="mx-auto max-w-4xl px-4 py-14 text-center sm:py-20">
+    <p class="surtitre">Aide</p>
+    <h1 class="titre mt-3 text-3xl font-semibold sm:text-4xl">Questions fréquentes</h1>
+    <p class="mx-auto mt-4 max-w-xl text-muted-foreground">
+      Si vous ne trouvez pas votre réponse ici,
+      <a href="{% url 'core:contact' %}" class="font-medium text-primary underline-offset-4 hover:underline">écrivez-nous</a>.
+    </p>
+  </div>
+</section>
+
+<div class="mx-auto max-w-3xl px-4 py-14">
+
+  {# Sommaire : les liens du pied de page pointent vers ces ancres. #}
+  <nav class="carte mb-10 p-5" aria-label="Sommaire">
+    <p class="text-sm font-semibold">Sur cette page</p>
+    <ul class="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+      <li><a href="#paiement" class="text-primary hover:underline">Paiement et séquestre</a></li>
+      <li><a href="#frais" class="text-primary hover:underline">Frais et commission</a></li>
+      <li><a href="#livraison" class="text-primary hover:underline">Livraison</a></li>
+      <li><a href="#litiges" class="text-primary hover:underline">Problèmes et litiges</a></li>
+      <li><a href="#compte" class="text-primary hover:underline">Mon compte</a></li>
+      <li><a href="#vendre" class="text-primary hover:underline">Vendre sur Digi-Farm</a></li>
+    </ul>
+  </nav>
+
+  {% comment %}
+    Accordéon en <details> : accessible au clavier, indexable par les moteurs de
+    recherche, et sans une ligne de JavaScript.
+  {% endcomment %}
+
+  {# ================================================================ paiement #}
+  <section id="paiement" class="mb-12 scroll-mt-20">
+    <h2 class="titre mb-4 flex items-center gap-2 text-xl font-semibold">
+      {% icone "lock" classe="size-5 text-primary" %}Paiement et séquestre
+    </h2>
+    <div class="space-y-2">
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Qu'est-ce que le « séquestre » ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          C'est le fait que Digi-Farm conserve votre paiement au lieu de le verser
+          immédiatement au vendeur. L'argent est encaissé, le vendeur voit que la
+          commande est payée et peut préparer sa marchandise, mais il ne touche
+          rien tant que vous n'avez pas confirmé la réception.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Quand le vendeur est-il payé exactement ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Au moment où vous appuyez sur « Confirmer la réception » depuis votre
+          espace. Ni avant, ni automatiquement au bout d'un certain délai. C'est
+          vous qui déclenchez le versement.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Quels moyens de paiement acceptez-vous ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Flooz (Moov), Mixx by Yas, et la carte bancaire.
+        </p>
+        <p class="mt-2 flex items-start gap-2 rounded-lg bg-attente/60 px-3 py-2 text-xs text-attente-foreground">
+          {% icone "triangle-alert" classe="size-3.5 shrink-0 mt-0.5" %}
+          En l'état actuel du site, le paiement est <strong>simulé</strong> : aucun
+          argent ne circule réellement tant qu'un agrégateur de paiement n'est pas
+          raccordé.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Puis-je annuler après avoir payé ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Tant que vous n'avez pas confirmé la réception, votre argent est encore
+          chez nous. Signalez un problème sur la commande : cela ouvre un litige,
+          bloque le versement, et nous examinons la situation.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  {# =================================================================== frais #}
+  <section id="frais" class="mb-12 scroll-mt-20">
+    <h2 class="titre mb-4 flex items-center gap-2 text-xl font-semibold">
+      {% icone "percent" classe="size-5 text-primary" %}Frais et commission
+    </h2>
+    <div class="space-y-2">
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Combien coûte Digi-Farm ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          {{ commission }} % du montant d'une vente conclue, prélevés sur le
+          versement au vendeur. Rien à l'inscription, rien pour publier une
+          annonce, aucun abonnement. Si vous ne vendez rien, vous ne payez rien.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Qui paie la commission, l'acheteur ou le vendeur ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Le vendeur. L'acheteur paie exactement le prix affiché : sur une vente
+          de 10 000 FCFA, l'acheteur débourse 10 000 FCFA et l'agriculteur reçoit
+          9 500 FCFA.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Y a-t-il des frais de transport en plus ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Le transport ne passe pas par nous. Vous choisissez entre le retrait sur
+          place et la livraison par transporteur ; dans ce second cas, les modalités
+          et le coût se règlent avec le vendeur.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  {# =============================================================== livraison #}
+  <section id="livraison" class="mb-12 scroll-mt-20">
+    <h2 class="titre mb-4 flex items-center gap-2 text-xl font-semibold">
+      {% icone "truck" classe="size-5 text-primary" %}Livraison
+    </h2>
+    <div class="space-y-2">
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Livrez-vous partout au Togo ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Digi-Farm n'assure pas le transport. Chaque annonce indique la région du
+          vendeur, et vous convenez avec lui du retrait ou de l'expédition.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Combien de temps avant de recevoir ma commande ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Cela dépend du vendeur et de la distance. Vous suivez l'avancement depuis
+          votre espace : payée, préparée, expédiée. À chaque étape, le vendeur met
+          la commande à jour.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Puis-je venir chercher moi-même ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Oui, c'est le mode « retrait sur place », souvent le moins cher. Vous
+          convenez du lieu et de l'heure avec le vendeur.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  {# ================================================================= litiges #}
+  <section id="litiges" class="mb-12 scroll-mt-20">
+    <h2 class="titre mb-4 flex items-center gap-2 text-xl font-semibold">
+      {% icone "triangle-alert" classe="size-5 text-destructive" %}Problèmes et litiges
+    </h2>
+    <div class="space-y-2">
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Je n'ai rien reçu. Que faire ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Surtout, <strong>ne confirmez pas la réception</strong> : c'est ce geste
+          qui paie le vendeur. Ouvrez un litige depuis la page de la commande, en
+          expliquant la situation. Le versement reste bloqué le temps de l'examen.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Le produit ne correspond pas à l'annonce.</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Même réponse : ouvrez un litige avec le motif, et des photos si vous
+          pouvez en fournir à un administrateur. Nous tranchons entre le versement
+          au vendeur et le remboursement de l'acheteur.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Je suis vendeur et l'acheteur ne confirme pas.</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Vous pouvez aussi ouvrir un litige de votre côté. Si vous prouvez la
+          remise de la marchandise, le versement est débloqué en votre faveur.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  {# ================================================================== compte #}
+  <section id="compte" class="mb-12 scroll-mt-20">
+    <h2 class="titre mb-4 flex items-center gap-2 text-xl font-semibold">
+      {% icone "user-round" classe="size-5 text-primary" %}Mon compte
+    </h2>
+    <div class="space-y-2">
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Puis-je être à la fois acheteur et vendeur ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Pas avec le même compte : le type est choisi à l'inscription et ne se
+          modifie pas depuis l'interface. Écrivez-nous si vous avez besoin d'en
+          changer.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Que veut dire « vendeur vérifié » ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Que nous avons confirmé l'identité de la personne et l'existence de son
+          exploitation. Un vendeur non vérifié peut vendre : le séquestre protège
+          l'acheteur dans les deux cas.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">J'ai oublié mon mot de passe.</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          La réinitialisation automatique par e-mail n'est pas encore en place.
+          Contactez-nous en attendant, nous rétablirons votre accès.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  {# ================================================================== vendre #}
+  <section id="vendre" class="mb-12 scroll-mt-20">
+    <h2 class="titre mb-4 flex items-center gap-2 text-xl font-semibold">
+      {% icone "sprout" classe="size-5 text-primary" %}Vendre sur Digi-Farm
+    </h2>
+    <div class="space-y-2">
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Comment publier une annonce ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Créez un compte agriculteur, puis « Vendre » depuis le menu. Indiquez le
+          produit, le prix par unité (kilo, sac ou tonne), la quantité disponible,
+          et ajoutez des photos — jusqu'à cinq.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Dois-je vendre au kilo ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Non. Vous choisissez votre unité : le kilo, le sac ou la tonne, selon
+          votre façon de vendre habituelle.
+        </p>
+      </details>
+
+      <details class="carte px-5 py-4">
+        <summary class="cursor-pointer font-medium">Combien de temps mon annonce reste-t-elle en ligne ?</summary>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Tant qu'il reste du stock. Quand la quantité tombe à zéro, l'annonce
+          passe en « épuisée » automatiquement. Vous pouvez aussi la retirer du
+          marché à tout moment, puis la remettre en ligne.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <div class="carte p-6 text-center">
+    <p class="titre text-lg font-semibold">Votre question n'est pas là ?</p>
+    <p class="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+      Écrivez-nous, nous répondons sous 48 heures — et nous ajouterons la réponse
+      ici si elle peut servir à d'autres.
+    </p>
+    <a href="{% url 'core:contact' %}" class="bouton primaire mt-5">
+      {% icone "message-circle" %}Poser ma question
+    </a>
+  </div>
+</div>
+{% endblock %}

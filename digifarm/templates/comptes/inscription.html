@@ -1,39 +1,97 @@
 {% extends "base.html" %}
-{% load icone %}
+{% load static icone %}
 
 {% block titre %}Créer un compte — Digi-Farm{% endblock %}
 
 {% block contenu %}
-<div class="mx-auto w-full max-w-lg px-4 py-12 sm:py-16">
-  <div class="mb-8 text-center">
-    <p class="surtitre">Bienvenue</p>
-    <h1 class="titre mt-2 text-3xl font-semibold">Créer un compte</h1>
-    <p class="mt-2 text-sm text-muted-foreground">
-      Vendez votre récolte ou achetez en direct, avec paiement protégé.
-    </p>
+<div class="grid lg:grid-cols-[1.1fr_1fr]">
+
+  {# ------------------------------------------------------------ formulaire #}
+  <div class="lavis flex items-center justify-center px-4 py-12 sm:py-16">
+    <div class="w-full max-w-lg">
+      <div class="mb-8">
+        <p class="surtitre">Bienvenue</p>
+        <h1 class="titre mt-2 text-3xl font-semibold">Créer un compte</h1>
+        <p class="mt-2 text-sm text-muted-foreground">
+          Gratuit, sans abonnement. Vous ne payez que si vous vendez.
+        </p>
+      </div>
+
+      <form method="post" class="carte p-6 shadow-sm" novalidate>
+        {% csrf_token %}
+        {% include "partiels/erreurs_formulaire.html" with formulaire=formulaire %}
+
+        {% include "partiels/champ_radio.html" with champ=formulaire.role %}
+        {% include "partiels/champ.html" with champ=formulaire.nom %}
+        {% include "partiels/champ.html" with champ=formulaire.email %}
+
+        <div class="grid gap-x-4 sm:grid-cols-2">
+          {% include "partiels/champ.html" with champ=formulaire.telephone %}
+          {% include "partiels/champ.html" with champ=formulaire.region %}
+        </div>
+
+        {% include "partiels/champ.html" with champ=formulaire.mot_de_passe %}
+
+        <button type="submit" class="bouton primaire grand pleine-largeur mt-2">
+          {% icone "badge-check" %}Créer mon compte
+        </button>
+
+        <p class="aide mt-3 text-center">
+          En créant un compte, vous acceptez nos
+          <a href="{% url 'core:conditions' %}" class="underline hover:text-primary">conditions d'utilisation</a>
+          et notre
+          <a href="{% url 'core:confidentialite' %}" class="underline hover:text-primary">politique de confidentialité</a>.
+        </p>
+      </form>
+
+      <p class="mt-6 text-center text-sm text-muted-foreground">
+        Déjà inscrit ?
+        <a href="{% url 'comptes:connexion' %}"
+           class="font-medium text-primary underline-offset-4 hover:underline">Se connecter</a>
+      </p>
+    </div>
   </div>
 
-  <form method="post" class="carte p-6 shadow-sm" novalidate>
-    {% csrf_token %}
-    {% include "partiels/erreurs_formulaire.html" with formulaire=formulaire %}
+  {# --------------------------------------- panneau : ce que le compte apporte #}
+  <div class="relative hidden overflow-hidden lg:block">
+    <img src="{% static 'img/accueil/vendeur.webp' %}" alt=""
+         width="1280" height="853" loading="lazy" decoding="async"
+         class="absolute inset-0 size-full object-cover">
+    <div class="absolute inset-0 bg-[oklch(0.28_0.03_150/0.9)]"></div>
 
-    {% include "partiels/champ_radio.html" with champ=formulaire.role %}
-    {% include "partiels/champ.html" with champ=formulaire.nom %}
-    {% include "partiels/champ.html" with champ=formulaire.email %}
-    {% include "partiels/champ.html" with champ=formulaire.telephone %}
-    {% include "partiels/champ.html" with champ=formulaire.region %}
-    {% include "partiels/champ.html" with champ=formulaire.mot_de_passe %}
+    <div class="relative flex h-full flex-col justify-center p-10">
+      <p class="surtitre text-white/60">Avec un compte</p>
 
-    <button type="submit" class="bouton primaire grand pleine-largeur mt-2">
-      {% icone "badge-check" %}Créer mon compte
-    </button>
-  </form>
+      <div class="mt-6 space-y-7">
+        <div>
+          <p class="flex items-center gap-2.5 font-medium text-white">
+            {% icone "sprout" classe="size-5" %}Vous êtes agriculteur
+          </p>
+          <p class="mt-1.5 text-sm text-white/75">
+            Publiez vos produits avec photos, fixez votre prix et votre unité de
+            vente, suivez vos commandes. Vous êtes payé dès que l'acheteur
+            confirme la réception.
+          </p>
+        </div>
 
-  <p class="mt-6 text-center text-sm text-muted-foreground">
-    Déjà inscrit ?
-    <a href="{% url 'comptes:connexion' %}" class="font-medium text-primary underline-offset-4 hover:underline">
-      Se connecter
-    </a>
-  </p>
+        <div class="h-px bg-white/15"></div>
+
+        <div>
+          <p class="flex items-center gap-2.5 font-medium text-white">
+            {% icone "shopping-basket" classe="size-5" %}Vous êtes acheteur
+          </p>
+          <p class="mt-1.5 text-sm text-white/75">
+            Commandez en direct au producteur, payez en mobile money, et gardez
+            votre argent protégé jusqu'à la réception de la marchandise.
+          </p>
+        </div>
+      </div>
+
+      <p class="mt-10 flex items-center gap-2 text-xs text-white/60">
+        {% icone "lock" classe="size-3.5" %}
+        Votre mot de passe est chiffré. Nous ne pouvons pas le lire.
+      </p>
+    </div>
+  </div>
 </div>
 {% endblock %}

@@ -319,3 +319,102 @@
     @apply text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase;
   }
 }
+
+/* ------------------------------------------------------------------------- */
+/* Décor                                                                      */
+/*                                                                            */
+/* Remplir l'espace sans télécharger d'images : dégradés, grain et voiles      */
+/* sont du CSS pur. Les vraies photos sont réservées aux endroits où elles     */
+/* apportent quelque chose (héros, catégories, appel à devenir vendeur).       */
+/* ------------------------------------------------------------------------- */
+
+@layer components {
+  /* Lavis de couleur diffus, posé derrière une section. */
+  .lavis {
+    position: relative;
+    isolation: isolate;
+  }
+  .lavis::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(
+        60% 55% at 12% 0%,
+        color-mix(in oklch, var(--color-primary) 13%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        50% 50% at 92% 8%,
+        color-mix(in oklch, var(--color-attente) 55%, transparent),
+        transparent 72%
+      );
+  }
+
+  /* Grain très léger : évite l'effet « aplat numérique » sur les grands fonds. */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23g)' opacity='0.22'/%3E%3C/svg%3E");
+  }
+
+  /* Voile sombre dégradé : rend un texte lisible par-dessus une photo.
+     Indispensable pour le contraste (4.5:1 minimum). */
+  .voile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      oklch(0.22 0.02 75 / 0.88) 0%,
+      oklch(0.22 0.02 75 / 0.55) 45%,
+      oklch(0.22 0.02 75 / 0.15) 100%
+    );
+  }
+
+  /* Filet de séparation en dégradé, plus doux qu'une bordure franche. */
+  .filet {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-border) 18%,
+      var(--color-border) 82%,
+      transparent
+    );
+  }
+
+  /* Tuile de catégorie : photo + voile + libellé, cliquable en entier. */
+  .tuile-categorie {
+    @apply relative flex aspect-5/4 items-end overflow-hidden rounded-2xl;
+  }
+  .tuile-categorie img {
+    @apply absolute inset-0 size-full object-cover transition-transform duration-500;
+  }
+  .tuile-categorie:hover img {
+    @apply scale-105;
+  }
+  .tuile-categorie > span {
+    @apply relative z-10 flex w-full items-center gap-2 p-3.5 text-sm font-medium text-white;
+  }
+
+  /* Chiffre mis en avant (bande de statistiques). */
+  .chiffre {
+    @apply font-display text-3xl font-semibold tabular-nums sm:text-4xl;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tuile-categorie img,
+  .carte img {
+    transition: none !important;
+  }
+  .tuile-categorie:hover img {
+    transform: none;
+  }
+}

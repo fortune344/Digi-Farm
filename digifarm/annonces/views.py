@@ -22,7 +22,15 @@ PAR_PAGE = 12
 
 
 def accueil(request):
-    """Page d'accueil éditoriale. Un aperçu du marché, pas le catalogue entier."""
+    """Page d'accueil : un aperçu du marché, pas le catalogue entier.
+
+    Structure retenue (motif « marketplace ») : héros centré sur la RECHERCHE,
+    puis catégories illustrées, arrivages, garanties, appel aux vendeurs.
+    La recherche est l'action principale : sur une marketplace, on vient
+    chercher un produit, pas lire une présentation.
+    """
+    from comptes.models import Profil
+
     recentes = (
         Annonce.objects.publiables()
         .select_related("agriculteur__profil")
@@ -33,8 +41,18 @@ def accueil(request):
         "annonces/accueil.html",
         {
             "recentes": recentes,
+            # Chiffres réels : si la base est presque vide, la page le dira.
             "nb_annonces": Annonce.objects.publiables().count(),
-            "categories": metier.CATEGORIES,
+            "nb_vendeurs": Profil.objects.filter(
+                role=metier.ROLE_AGRICULTEUR
+            ).count(),
+            "nb_regions": len(metier.REGIONS),
+            "commission": int(metier.TAUX_COMMISSION * 100),
+            "categories": metier.categories_illustrees(),
+            "regions_liste": metier.REGIONS,
+            # Raccourcis de recherche : on ne laisse pas l'utilisateur devant un
+            # champ vide sans idée de ce qu'il peut taper.
+            "suggestions": ["Maïs", "Tomates", "Igname", "Ananas", "Miel"],
         },
     )
 
@@ -97,7 +115,7 @@ def marche(request):
             "categorie_active": categorie,
             "region_active": region,
             "tri_actif": tri,
-            "categories": metier.CATEGORIES,
+            "categories": metier.categories_illustrees(),
             "regions": metier.REGIONS,
             "parametres": parametres.urlencode(),
             "filtres_actifs": bool(recherche or categorie or region),

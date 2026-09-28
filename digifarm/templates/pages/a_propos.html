@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% load static icone %}
+
+{% block titre %}À propos — Digi-Farm{% endblock %}
+{% block description %}Pourquoi Digi-Farm existe : vendre sa récolte au juste prix, acheter en confiance, avec un paiement protégé jusqu'à la réception.{% endblock %}
+
+{% block contenu %}
+
+{# ==================================================================== héros #}
+<section class="lavis grain relative overflow-hidden border-b border-border/60">
+  <div class="relative z-10 mx-auto max-w-4xl px-4 py-16 text-center sm:py-24">
+    <p class="surtitre">À propos</p>
+    <h1 class="titre mt-3 text-3xl font-semibold text-balance sm:text-5xl">
+      Le producteur fixe son prix. L'acheteur paie sans risque.
+    </h1>
+    <p class="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
+      Digi-Farm est une place de marché en ligne pour les produits agricoles du
+      Togo. Pas un intermédiaire qui achète pour revendre : un endroit où
+      l'agriculteur et l'acheteur se rencontrent directement.
+    </p>
+  </div>
+</section>
+
+{# =================================================================== chiffres #}
+<section class="border-b border-border/60 bg-card">
+  <div class="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-8 sm:grid-cols-4">
+    <div><p class="chiffre text-primary">{{ nb_annonces }}</p>
+      <p class="mt-1 text-sm text-muted-foreground">produits en vente</p></div>
+    <div><p class="chiffre text-primary">{{ nb_vendeurs }}</p>
+      <p class="mt-1 text-sm text-muted-foreground">agriculteurs inscrits</p></div>
+    <div><p class="chiffre text-primary">{{ nb_regions }}</p>
+      <p class="mt-1 text-sm text-muted-foreground">régions du Togo</p></div>
+    <div><p class="chiffre text-primary">{{ commission }} %</p>
+      <p class="mt-1 text-sm text-muted-foreground">de commission</p></div>
+  </div>
+</section>
+
+{# ================================================================== le problème #}
+<section class="mx-auto max-w-6xl px-4 py-16">
+  <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+    <div class="overflow-hidden rounded-3xl">
+      <img src="{% static 'img/accueil/vendeur.webp' %}"
+           alt="Sacs de maïs prêts à la vente"
+           width="1280" height="853" loading="lazy" decoding="async"
+           class="aspect-4/3 w-full object-cover">
+    </div>
+    <div>
+      <p class="surtitre">Le problème</p>
+      <h2 class="titre mt-2 text-2xl font-semibold sm:text-3xl text-balance">
+        Entre le champ et l'assiette, la valeur se perd en chemin.
+      </h2>
+      <div class="mt-4 space-y-4 text-muted-foreground">
+        <p>
+          Un agriculteur qui vend sa récolte au bord de la route ou à un
+          collecteur de passage n'a pas beaucoup de marge de négociation : il
+          accepte le prix proposé, parce que la récolte ne se garde pas.
+        </p>
+        <p>
+          À l'autre bout, un restaurant ou un grossiste de Lomé paie un produit
+          bien plus cher qu'il n'a été vendu, sans savoir d'où il vient.
+        </p>
+        <p class="text-foreground">
+          Digi-Farm supprime ce chemin. Le producteur publie ce qu'il a, au prix
+          qu'il décide. L'acheteur voit qui vend, où, et à combien.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# =================================================== la confiance, le vrai sujet #}
+<section class="border-y border-border/60 bg-card/60">
+  <div class="mx-auto max-w-6xl px-4 py-16">
+    <div class="max-w-2xl">
+      <p class="surtitre">Le nœud du problème</p>
+      <h2 class="titre mt-2 text-2xl font-semibold sm:text-3xl text-balance">
+        Qui prend le risque de payer en premier ?
+      </h2>
+      <p class="mt-4 text-muted-foreground">
+        C'est la vraie difficulté d'une vente à distance entre deux personnes qui
+        ne se connaissent pas. Si l'acheteur paie d'avance, il craint de ne rien
+        recevoir. Si le vendeur expédie d'abord, il craint de ne pas être payé.
+        Notre réponse : <strong class="font-medium text-foreground">personne ne
+        prend ce risque</strong>.
+      </p>
+    </div>
+
+    <div class="mt-10 grid gap-4 sm:grid-cols-3">
+      <div class="carte p-5">
+        <span class="flex size-10 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+          {% icone "credit-card" classe="size-5" %}
+        </span>
+        <p class="mt-3 font-medium">1. L'acheteur paie Digi-Farm</p>
+        <p class="mt-1 text-sm text-muted-foreground">
+          Le montant est encaissé sur mobile money ou par carte. Il n'est pas
+          versé au vendeur.
+        </p>
+      </div>
+      <div class="carte p-5">
+        <span class="flex size-10 items-center justify-center rounded-xl bg-attente text-attente-foreground">
+          {% icone "lock" classe="size-5" %}
+        </span>
+        <p class="mt-3 font-medium">2. Nous conservons l'argent</p>
+        <p class="mt-1 text-sm text-muted-foreground">
+          Le vendeur voit la commande payée et prépare sa marchandise sans rien
+          avancer. On appelle cela le séquestre.
+        </p>
+      </div>
+      <div class="carte p-5">
+        <span class="flex size-10 items-center justify-center rounded-xl bg-succes text-succes-foreground">
+          {% icone "circle-check" classe="size-5" %}
+        </span>
+        <p class="mt-3 font-medium">3. Le vendeur est payé</p>
+        <p class="mt-1 text-sm text-muted-foreground">
+          Quand l'acheteur confirme la réception. Jamais avant, et jamais
+          automatiquement.
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-6 rounded-2xl border border-border bg-card p-5">
+      <p class="flex items-center gap-2 font-medium">
+        {% icone "triangle-alert" classe="size-4 text-destructive" %}
+        Et si la livraison se passe mal ?
+      </p>
+      <p class="mt-2 text-sm text-muted-foreground">
+        L'acheteur comme le vendeur peuvent ouvrir un litige. Le versement est
+        alors bloqué et nous examinons le dossier avant de trancher. Aucun
+        paiement ne part pendant qu'un litige est ouvert.
+      </p>
+    </div>
+  </div>
+</section>
+
+{# ================================================================== le modèle #}
+<section class="mx-auto max-w-6xl px-4 py-16">
+  <div class="grid gap-10 lg:grid-cols-2">
+    <div>
+      <p class="surtitre">Notre modèle</p>
+      <h2 class="titre mt-2 text-2xl font-semibold sm:text-3xl">
+        {{ commission }} % sur une vente conclue. C'est tout.
+      </h2>
+      <p class="mt-4 text-muted-foreground">
+        Pas d'abonnement, rien à payer pour s'inscrire ni pour publier une
+        annonce. Nous ne gagnons quelque chose que lorsqu'une vente aboutit
+        réellement — donc quand l'acheteur a confirmé avoir reçu sa commande.
+      </p>
+      <p class="mt-3 text-muted-foreground">
+        La commission est prélevée au moment du versement : sur une vente de
+        10 000 FCFA, l'agriculteur reçoit 9 500 FCFA.
+      </p>
+    </div>
+
+    <div>
+      <p class="surtitre">Ce que nous ne faisons pas</p>
+      <h2 class="titre mt-2 text-2xl font-semibold sm:text-3xl">Nos limites, dites franchement.</h2>
+      <ul class="mt-4 space-y-3 text-muted-foreground">
+        <li class="flex gap-2.5">
+          {% icone "x" classe="size-4 shrink-0 mt-1 text-destructive" %}
+          <span>Nous n'achetons pas la marchandise et nous ne la stockons pas.
+            Le transport est organisé entre l'acheteur et le vendeur.</span>
+        </li>
+        <li class="flex gap-2.5">
+          {% icone "x" classe="size-4 shrink-0 mt-1 text-destructive" %}
+          <span>Nous ne garantissons pas la qualité d'un produit que nous n'avons
+            pas vu. Nous garantissons que votre argent ne part pas avant que vous
+            l'ayez reçu.</span>
+        </li>
+        <li class="flex gap-2.5">
+          {% icone "x" classe="size-4 shrink-0 mt-1 text-destructive" %}
+          <span>Nous ne fixons pas les prix. Chaque agriculteur décide du sien.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+{# ============================================================== appel à l'action #}
+<section class="border-t border-border/60 bg-card">
+  <div class="mx-auto max-w-4xl px-4 py-16 text-center">
+    <h2 class="titre text-2xl font-semibold sm:text-3xl">Prêt à commencer ?</h2>
+    <p class="mx-auto mt-3 max-w-lg text-muted-foreground">
+      Que vous cultiviez ou que vous cherchiez à vous approvisionner, la création
+      de compte prend deux minutes.
+    </p>
+    <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
+      {% if not user.is_authenticated %}
+        <a href="{% url 'comptes:inscription' %}" class="bouton primaire grand">
+          {% icone "badge-check" %}Créer un compte
+        </a>
+      {% endif %}
+      <a href="{% url 'annonces:marche' %}" class="bouton contour grand">
+        {% icone "store" %}Voir le marché
+      </a>
+      <a href="{% url 'core:contact' %}" class="bouton fantome grand">
+        {% icone "message-circle" %}Nous écrire
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

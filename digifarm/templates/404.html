@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static icone %}
+
+{% block titre %}Page introuvable — Digi-Farm{% endblock %}
+
+{% block contenu %}
+<div class="lavis grain relative">
+  <div class="relative z-10 mx-auto max-w-2xl px-4 py-20 text-center sm:py-28">
+    <p class="titre text-7xl font-semibold text-primary/30">404</p>
+    <h1 class="titre mt-4 text-3xl font-semibold sm:text-4xl">Cette page n'existe pas</h1>
+    <p class="mx-auto mt-4 max-w-md text-muted-foreground">
+      Le lien est peut-être ancien, ou l'annonce que vous cherchiez a été retirée
+      du marché par son vendeur.
+    </p>
+
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <a href="{% url 'annonces:marche' %}" class="bouton primaire grand">
+        {% icone "store" %}Voir le marché
+      </a>
+      <a href="{% url 'annonces:accueil' %}" class="bouton contour grand">
+        {% icone "house" %}Accueil
+      </a>
+    </div>
+
+    <form action="{% url 'annonces:marche' %}" method="get" class="mx-auto mt-10 max-w-md" role="search">
+      <label for="recherche-404" class="etiquette text-left">Chercher un produit</label>
+      <div class="flex gap-2">
+        <input type="search" id="recherche-404" name="q" class="champ"
+               placeholder="Maïs, tomate, igname…" inputmode="search">
+        <button type="submit" class="bouton primaire shrink-0">{% icone "search" %}</button>
+      </div>
+    </form>
+
+    <p class="mt-8 text-sm text-muted-foreground">
+      Vous pensez que c'est une erreur de notre part ?
+      <a href="{% url 'core:contact' %}" class="font-medium text-primary underline-offset-4 hover:underline">Dites-le-nous</a>.
+    </p>
+  </div>
+</div>
+{% endblock %}

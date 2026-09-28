@@ -127,3 +127,39 @@ METHODES_PAIEMENT = [
 
 # Commission de la plateforme, prélevée à la libération du séquestre.
 TAUX_COMMISSION = Decimal("0.05")
+
+
+# --- Habillage des catégories -------------------------------------------------
+
+# Photo et icône associées à chaque catégorie. Les images vivent dans
+# static/img/categories/<slug>.webp et sont extraites du catalogue
+# (voir scripts/ et core/fixtures/catalogue_demo.json).
+HABILLAGE_CATEGORIES: dict[str, dict[str, str]] = {
+    "Céréales": {"slug": "cereales", "icone": "wheat"},
+    "Légumes": {"slug": "legumes", "icone": "leaf"},
+    "Tubercules & racines": {"slug": "tubercules", "icone": "boxes"},
+    "Légumineuses": {"slug": "legumineuses", "icone": "shopping-basket"},
+    "Fruits": {"slug": "fruits", "icone": "leaf"},
+    "Oléagineux": {"slug": "oleagineux", "icone": "coins"},
+    "Épices & condiments": {"slug": "epices", "icone": "sprout"},
+    "Autres": {"slug": "autres", "icone": "package"},
+}
+
+
+def categories_illustrees() -> list[dict[str, str]]:
+    """Catégories prêtes à afficher : valeur, libellé, image et icône.
+
+    Utilisée par la page d'accueil (tuiles) et le marché (filtres visuels).
+    """
+    illustrees = []
+    for valeur, libelle in CATEGORIES:
+        habillage = HABILLAGE_CATEGORIES.get(valeur, {"slug": "autres", "icone": "package"})
+        illustrees.append(
+            {
+                "valeur": valeur,
+                "libelle": libelle,
+                "slug": habillage["slug"],
+                "icone": habillage["icone"],
+            }
+        )
+    return illustrees

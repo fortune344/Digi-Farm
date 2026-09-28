@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load icone %}
+
+{% block titre %}Conditions d'utilisation — Digi-Farm{% endblock %}
+{% block description %}Les règles d'utilisation de Digi-Farm : rôle de la plateforme, obligations des vendeurs et des acheteurs, paiement séquestré, litiges.{% endblock %}
+
+{% block contenu %}
+<div class="mx-auto max-w-3xl px-4 py-14">
+
+  <p class="surtitre">Cadre juridique</p>
+  <h1 class="titre mt-3 text-3xl font-semibold sm:text-4xl">Conditions d'utilisation</h1>
+  <p class="mt-3 text-sm text-muted-foreground">
+    Dernière mise à jour : {% now "j F Y" %}
+  </p>
+
+  <div class="mt-6 flex items-start gap-2.5 rounded-xl bg-attente px-4 py-3 text-sm text-attente-foreground">
+    {% icone "triangle-alert" classe="size-4 shrink-0 mt-0.5" %}
+    <span>
+      <strong>Document de travail.</strong> Ce texte décrit fidèlement le
+      fonctionnement de la plateforme, mais il n'a pas été relu par un juriste et
+      ne constitue pas encore un contrat opposable. Il doit être validé par un
+      professionnel du droit togolais avant une ouverture commerciale.
+    </span>
+  </div>
+
+  <div class="mt-10 space-y-10 text-muted-foreground">
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">1. Ce qu'est Digi-Farm</h2>
+      <p class="mt-3">
+        Digi-Farm est une plateforme de mise en relation entre des producteurs
+        agricoles établis au Togo (« vendeurs ») et des personnes ou entreprises
+        souhaitant acheter leurs produits (« acheteurs »).
+      </p>
+      <p class="mt-3">
+        Digi-Farm <strong class="text-foreground">n'achète pas, ne stocke pas et ne
+        transporte pas</strong> la marchandise. La vente est conclue directement
+        entre le vendeur et l'acheteur. Digi-Farm intervient uniquement pour
+        héberger les annonces, encaisser le paiement et le conserver jusqu'à la
+        confirmation de réception.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">2. Inscription et comptes</h2>
+      <p class="mt-3">
+        L'inscription est gratuite. Chaque compte est de type « agriculteur » ou
+        « acheteur », choisi à la création. Vous vous engagez à fournir des
+        informations exactes et à garder votre mot de passe confidentiel.
+      </p>
+      <p class="mt-3">
+        La mention « vendeur vérifié » signifie que Digi-Farm a contrôlé
+        l'identité du vendeur. Son absence n'empêche pas de vendre.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">3. Obligations du vendeur</h2>
+      <ul class="mt-3 space-y-2">
+        <li class="flex gap-2.5">{% icone "check" classe="size-4 shrink-0 mt-1 text-primary" %}
+          <span>Décrire ses produits de façon honnête : variété, état, quantité
+            réellement disponible.</span></li>
+        <li class="flex gap-2.5">{% icone "check" classe="size-4 shrink-0 mt-1 text-primary" %}
+          <span>Ne publier que des photos de sa propre production.</span></li>
+        <li class="flex gap-2.5">{% icone "check" classe="size-4 shrink-0 mt-1 text-primary" %}
+          <span>Préparer et remettre la commande dans un délai raisonnable après
+            le paiement.</span></li>
+        <li class="flex gap-2.5">{% icone "check" classe="size-4 shrink-0 mt-1 text-primary" %}
+          <span>Respecter la réglementation applicable à la vente de produits
+            agricoles et alimentaires au Togo.</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">4. Obligations de l'acheteur</h2>
+      <ul class="mt-3 space-y-2">
+        <li class="flex gap-2.5">{% icone "check" classe="size-4 shrink-0 mt-1 text-primary" %}
+          <span>Payer la commande passée.</span></li>
+        <li class="flex gap-2.5">{% icone "check" classe="size-4 shrink-0 mt-1 text-primary" %}
+          <span>Confirmer la réception <strong class="text-foreground">sans délai
+            injustifié</strong> dès que la marchandise est reçue et conforme :
+            c'est ce qui déclenche le paiement du vendeur.</span></li>
+        <li class="flex gap-2.5">{% icone "check" classe="size-4 shrink-0 mt-1 text-primary" %}
+          <span>N'ouvrir un litige que de bonne foi.</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">5. Paiement et séquestre</h2>
+      <p class="mt-3">
+        Le paiement est effectué à Digi-Farm, qui le conserve — on parle de
+        séquestre. Le vendeur est crédité du montant de la vente
+        <strong class="text-foreground">diminué d'une commission de {{ commission }} %</strong>
+        lorsque l'acheteur confirme la réception.
+      </p>
+      <p class="mt-3">
+        Aucun versement automatique n'a lieu : seule la confirmation de l'acheteur,
+        ou la décision d'un administrateur en cas de litige, libère les fonds.
+      </p>
+      <p class="mt-3 rounded-xl bg-muted/60 p-4 text-sm">
+        À ce jour, l'encaissement est <strong class="text-foreground">simulé</strong> :
+        aucun agrégateur de paiement n'est raccordé et aucune somme réelle ne
+        circule sur la plateforme.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">6. Litiges entre utilisateurs</h2>
+      <p class="mt-3">
+        Le vendeur comme l'acheteur peuvent ouvrir un litige sur une commande payée
+        et non encore confirmée. L'ouverture d'un litige bloque immédiatement tout
+        versement.
+      </p>
+      <p class="mt-3">
+        Digi-Farm examine les éléments fournis par les deux parties et décide soit
+        de verser les fonds au vendeur, soit de les rembourser à l'acheteur. Cette
+        décision porte sur la destination des fonds séquestrés et ne prive aucune
+        des parties de ses recours légaux.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">7. Contenus interdits</h2>
+      <p class="mt-3">
+        Sont interdits : les annonces mensongères, les produits dont la vente est
+        réglementée sans autorisation, les contrefaçons, et toute photo dont vous
+        ne détenez pas les droits. Digi-Farm peut suspendre une annonce ou un
+        compte qui ne respecte pas ces règles.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">8. Responsabilité</h2>
+      <p class="mt-3">
+        Digi-Farm garantit le mécanisme de séquestre : votre paiement ne part pas
+        chez le vendeur avant votre confirmation. Digi-Farm
+        <strong class="text-foreground">ne garantit pas</strong> la qualité, la
+        quantité exacte ni la conformité d'un produit qu'elle n'a pas vu, ni les
+        délais de transport, qui ne dépendent pas d'elle.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">9. Modification et résiliation</h2>
+      <p class="mt-3">
+        Ces conditions peuvent évoluer ; la date de dernière mise à jour figure en
+        haut de page. Vous pouvez demander la suppression de votre compte à tout
+        moment, sous réserve qu'aucune commande ne soit en cours.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="titre text-xl font-semibold text-foreground">10. Contact</h2>
+      <p class="mt-3">
+        Pour toute question sur ces conditions :
+        <a href="{% url 'core:contact' %}" class="font-medium text-primary underline-offset-4 hover:underline">notre
+        page de contact</a>, ou
+        <a href="mailto:contact@digifarm.tg" class="font-medium text-primary underline-offset-4 hover:underline">contact@digifarm.tg</a>.
+      </p>
+    </section>
+  </div>
+
+  <div class="filet my-10"></div>
+
+  <p class="text-sm text-muted-foreground">
+    Voir aussi :
+    <a href="{% url 'core:confidentialite' %}" class="text-primary hover:underline">politique de confidentialité</a>
+    ·
+    <a href="{% url 'core:faq' %}" class="text-primary hover:underline">questions fréquentes</a>
+  </p>
+</div>
+{% endblock %}

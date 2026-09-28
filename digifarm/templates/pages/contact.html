@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static icone %}
+
+{% block titre %}Nous contacter — Digi-Farm{% endblock %}
+{% block description %}Une question sur une commande, un paiement, ou l'envie de vendre vos produits ? Écrivez-nous ou appelez-nous.{% endblock %}
+
+{% block contenu %}
+<section class="lavis border-b border-border/60">
+  <div class="mx-auto max-w-4xl px-4 py-14 text-center sm:py-20">
+    <p class="surtitre">Contact</p>
+    <h1 class="titre mt-3 text-3xl font-semibold sm:text-4xl">Une question ? Écrivez-nous.</h1>
+    <p class="mx-auto mt-4 max-w-xl text-muted-foreground">
+      Nous répondons sous 48 heures. Si c'est urgent — une livraison en cours, un
+      paiement bloqué — appelez-nous directement, c'est plus rapide.
+    </p>
+  </div>
+</section>
+
+<div class="mx-auto grid max-w-6xl gap-10 px-4 py-14 lg:grid-cols-[1fr_1.2fr]">
+
+  {# --------------------------------------------------------- moyens directs #}
+  <div>
+    <h2 class="titre text-xl font-semibold">Nous joindre directement</h2>
+
+    <ul class="mt-5 space-y-3">
+      <li>
+        <a href="tel:+22890000000"
+           class="carte flex items-center gap-4 p-4 transition-colors hover:bg-muted/60">
+          <span class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+            {% icone "phone" classe="size-5" %}
+          </span>
+          <span class="min-w-0">
+            <span class="block font-medium">+228 90 00 00 00</span>
+            <span class="block text-sm text-muted-foreground">
+              Du lundi au samedi, 8 h – 18 h
+            </span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a href="mailto:contact@digifarm.tg"
+           class="carte flex items-center gap-4 p-4 transition-colors hover:bg-muted/60">
+          <span class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+            {% icone "mail" classe="size-5" %}
+          </span>
+          <span class="min-w-0">
+            <span class="block font-medium">contact@digifarm.tg</span>
+            <span class="block text-sm text-muted-foreground">Réponse sous 48 h</span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <div class="carte flex items-center gap-4 p-4">
+          <span class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+            {% icone "map-pin" classe="size-5" %}
+          </span>
+          <span class="min-w-0">
+            <span class="block font-medium">Lomé, Togo</span>
+            <span class="block text-sm text-muted-foreground">
+              Sur rendez-vous uniquement
+            </span>
+          </span>
+        </div>
+      </li>
+    </ul>
+
+    <div class="carte mt-6 p-5">
+      <p class="flex items-center gap-2 font-medium">
+        {% icone "info" classe="size-4 text-primary" %}
+        Avant d'écrire, un raccourci
+      </p>
+      <p class="mt-2 text-sm text-muted-foreground">
+        La plupart des questions sur les frais, les délais de paiement et les
+        litiges ont déjà leur réponse dans notre aide.
+      </p>
+      <a href="{% url 'core:faq' %}" class="bouton contour petit mt-4">
+        {% icone "circle-alert" %}Questions fréquentes
+      </a>
+    </div>
+
+    <div class="mt-6 overflow-hidden rounded-2xl">
+      <img src="{% static 'img/categories/legumes.webp' %}"
+           alt="Légumes frais du marché"
+           width="560" height="420" loading="lazy" decoding="async"
+           class="aspect-16/9 w-full object-cover">
+    </div>
+  </div>
+
+  {# ----------------------------------------------------------- le formulaire #}
+  <div>
+    <h2 class="titre text-xl font-semibold">Envoyer un message</h2>
+
+    <form method="post" class="carte mt-5 p-6 shadow-sm" novalidate>
+      {% csrf_token %}
+      {% include "partiels/erreurs_formulaire.html" with formulaire=formulaire %}
+
+      {# Pot de miel : invisible, et seuls les robots le remplissent. #}
+      <div class="hidden" aria-hidden="true">{{ formulaire.site_web }}</div>
+
+      <div class="grid gap-x-4 sm:grid-cols-2">
+        {% include "partiels/champ.html" with champ=formulaire.nom %}
+        {% include "partiels/champ.html" with champ=formulaire.email %}
+        {% include "partiels/champ.html" with champ=formulaire.telephone %}
+        {% include "partiels/champ.html" with champ=formulaire.sujet %}
+      </div>
+
+      {% include "partiels/champ.html" with champ=formulaire.message %}
+
+      <button type="submit" class="bouton primaire grand pleine-largeur">
+        {% icone "send" %}Envoyer le message
+      </button>
+
+      <p class="aide mt-3">
+        Vos coordonnées ne servent qu'à vous répondre. Elles ne sont ni revendues
+        ni utilisées pour de la publicité — voir notre
+        <a href="{% url 'core:confidentialite' %}" class="underline hover:text-primary">politique
+        de confidentialité</a>.
+      </p>
+    </form>
+  </div>
+</div>
+{% endblock %}
