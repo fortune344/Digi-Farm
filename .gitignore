@@ -1,67 +1,35 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-# ...sauf le modèle, qui ne contient aucune valeur réelle et doit être versionné.
-!.env.example
-
-# base de données SQLite locale
-/data/*.db
-/data/*.db-shm
-/data/*.db-wal
-/data/*.sqlite
-
-# photos uploadées localement (Phase 2)
-/public/uploads/*
-!/public/uploads/.gitkeep
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# --- Django (digifarm/) ---
-digifarm/db.sqlite3
-digifarm/db.sqlite3-*
-digifarm/staticfiles/
-digifarm/static/css/site.css
+# --- Python / Django -------------------------------------------------------
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .venv/
 venv/
 
+# base de données locale
+digifarm/db.sqlite3
+digifarm/db.sqlite3-*
+
+# fichiers statiques collectés pour la production
+digifarm/staticfiles/
+
+# feuille de style compilée : régénérée par `pnpm css:build`
+digifarm/static/css/site.css
+
 # photos d'annonces envoyées par les utilisateurs
+# (les photos de démonstration, elles, sont versionnées dans
+#  digifarm/core/fixtures/photos/)
 /media/
+
+# --- Outils front (Tailwind, extraction des icônes) ------------------------
+/node_modules
+.pnpm-debug.log*
+
+# --- Secrets ---------------------------------------------------------------
+.env*
+# ...sauf le modèle, qui ne contient aucune valeur réelle et doit être versionné.
+!.env.example
+*.pem
+
+# --- Divers ----------------------------------------------------------------
+.DS_Store
+Thumbs.db

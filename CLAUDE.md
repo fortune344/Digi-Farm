@@ -10,7 +10,9 @@ connexion souvent lente, parfois peu à l'aise avec le numérique. Langue : fran
 Réécriture décidée le 27/09/2026 : je ne maîtrise pas Next.js, et une app que je ne peux pas
 maintenir est une dette, pas un actif. Django colle aussi mieux au produit (tout est rendu
 côté serveur, ~0 Ko de JS sur connexion lente, SQLite sur VPS ordinaire, admin offert).
-Le code vit dans **`digifarm/`** — voir `digifarm/README.md`.
+Le code Next a été **entièrement supprimé le 28/09/2026**, parité atteinte.
+Le code vit dans **`digifarm/`** — voir `digifarm/README.md`. À la racine il ne reste que
+`package.json` (chaîne Tailwind + extraction des icônes), `docs/`, `SPEC.md` et les READMEs.
 - **Django 5.2 LTS** + **Python 3.13** (auth, sessions, ORM, migrations, admin natifs)
 - **Tailwind CSS 4.3.0** via `@tailwindcss/cli` (`pnpm css:build` / `css:watch`)
 - **HTMX 2.0.8** vendorisé en local (`static/js/`) — pas de CDN, pas de build JS
@@ -23,22 +25,6 @@ Le code vit dans **`digifarm/`** — voir `digifarm/README.md`.
 - Icônes : SVG lucide inlinés via `{% icone %}` — registre généré (`pnpm icones`)
 - Polices : **Fraunces** (titres) depuis Google Fonts ; **pile système** pour le corps
   (économie de ~100 Ko au premier chargement)
-
-### Ancienne stack Next.js — CONSERVÉE EN RÉFÉRENCE (racine du dépôt)
-Gelée, plus de développement dessus. À supprimer une fois la parité atteinte.
-- **Next.js 16.2.6** (App Router, Turbopack) + **TypeScript 5.9.3** (strict)
-- **Tailwind CSS 4.3.0** (@tailwindcss/postcss 4.3.0)
-- **Biome 2.2.0** (lint + format)
-- Base de données : **SQLite** via **better-sqlite3 12.10.0** + **Drizzle ORM 0.45.2** (migrations **drizzle-kit 0.31.10**)
-- Validation : **zod 4.4.3**
-- Tests : **vitest 3.2.4** (vitest 4 évité : sa dépendance native rolldown ne s'installait pas)
-- React **19.2.4** / react-dom **19.2.4**
-- Auth : **gérée par l'application** (sessions en base + cookie httpOnly sécurisé, mots de passe hachés). PAS de service externe.
-- Stockage des photos : **système de fichiers local** (compression à l'upload via sharp, ajouté en Phase 2)
-- Paiement : agrégateur mobile money/carte avec PayIn ET PayOut (voir docs/blueprints/paiement.md)
-- Hébergement : local pour l'instant (à décider plus tard ; attention SQLite ≠ serverless)
-- Gestionnaire de paquets : **pnpm 11.5.0** (versions exactes via .npmrc `save-exact=true`)
-- **Design UI** : direction shadcn/ui + Tailwind + animations, inspiration https://21st.dev (à implémenter aux phases UI 1-3)
 
 ### Notes d'environnement (Windows)
 - Le `fetch` de pnpm timeoute sur ce poste (IPv6) : lancer les installs avec
@@ -90,43 +76,46 @@ Gelée, plus de développement dessus. À supprimer une fois la parité atteinte
 
 ## Ce qui a été décidé
 (Mettre à jour à chaque session — garder les 5 décisions les plus récentes.)
-- **27/09/2026 — passage à Django, en parallèle, phase par phase** (branche `django`).
-  Nouveau projet dans `digifarm/` ; l'app Next reste à la racine, gelée, comme référence.
-  Décisions prises : **auth Django native + `Profil`** (rôle en base, pas de champ client) ;
-  **HTMX** pour le peu d'interactivité (pas d'Alpine, pas de build JS) ; **re-seed** à neuf
-  (`seed_demo`) plutôt que migration de l'ancienne base — les **photos et le catalogue curé
-  sont réutilisés** via `core/fixtures/catalogue_demo.json`.
-  Porté en une passe : schéma, logique pure (`tarifs`/`statuts`/`sequestre`/`liberation`),
-  services transactionnels, webhook signé, marché, CRUD annonces, tunnel + paiement simulé,
-  suivi, litige. **90 tests verts.** Palette OKLCH et Fraunces conservées telles quelles ;
-  corps de texte en pile système (économie de données).
-  **Classes de composants CSS** (`.bouton primaire`, `.carte`, `.badge succes`, `.champ`)
-  définies dans `static/src/input.css` : gabarits lisibles, pas de soupe d'utilitaires.
-  **Admin Django** = base de la Phase 8 (litiges), avec paiements/journal en lecture seule.
-  **Tableau de bord vendeur refait** (c'était la demande d'origine) : tuiles bento
-  (à traiter / sous séquestre / encaissé), file d'action avec le bouton de progression
-  *dans* la ligne, inventaire avec alertes de stock, états vides guidés.
-  Reste à faire : reprendre les avis/notes, la résolution admin des litiges, le déploiement,
-  puis supprimer `src/` et les dépendances Next.
-- **Phase 5 terminée — suivi + confirmation de réception → libération** : vendeur marque préparée/expédiée ;
-  acheteur **confirme la réception** → `releaseEscrowOnReception` fait le **PayOut net (total − commission 5%)**,
-  sequestre→**libere**, commande **livree**. **Litige** (`orders.litige_motif`) bloque la libération ;
-  résolution admin = Phase 8. États commande dans `order-status.ts` (pur). Lib auto interdite ailleurs.
-  **64 tests** dont **test d'intégration du flux** (`release-flow.test.ts`) + E2E webhook 11/11 toujours vert.
-- **Phase 4 — commande + paiement séquestré** : orders/order_items/payments/payment_audit ; tunnel
-  `/commander/[id]` (total serveur, commission 5%, anti self-buy, stock) → agrégateur **SIMULÉ**
-  `/paiement/mock/[ref]` → **webhook signé** `/api/paiement/webhook` (HMAC, idempotent, montant vérifié).
-  `escrow.ts` : en_attente→collecte→sequestre. PayOut via `PaymentProvider.payout` (mock). `node scripts/test-webhook.cjs`.
-- **Agrégateur** : interface `PaymentProvider` (`src/lib/payments/provider.ts`) ; impl. mock pour l'instant
-  (pas de compte marchand). Brancher CinetPay/FedaPay/Hub2 plus tard = nouvelle impl + schéma de signature réel.
-  Secret webhook : `PAYMENT_WEBHOOK_SECRET` (fallback dev si absent).
-- **Refonte design (taste-skill « soft »)** : `/` = landing éditoriale, catalogue sur `/marche` ; palette
-  crème/sauge/espresso (OKLCH), titres **Fraunces**, boutons `rounded-full`, easing `--ease-soft`. Réf. 21st.dev.
-- **Images** : `images.unoptimized: true` (l'optimizer Next 16 rejette les chemins locaux `/uploads/**`).
-  Tableau de bord **par rôle** (`/tableau-de-bord`). Prix affiché **par unité** (kg/sac/tonne), pas au kilo partout.
-- **Seed** : `node scripts/seed-demo.cjs` → 3 vendeurs + 25 annonces, **vraies photos** Wikimedia Commons
-  (recherche filtrée + surcharges `Special:FilePath`). `--dry-run` / `--clean`.
-  **Piège** : `next start` indexe `public/` au boot → **redémarrer après un seed** ; vérifier en **prod** (worker dev capricieux).
-- **Rappels** : auth scrypt + sessions SHA-256 ; autorisation serveur (pas de RLS) ; SQLite+Drizzle **synchrone** ;
-  `server-only` aliasé en test ; `middleware.ts` déprécié Next 16 (à renommer `proxy` plus tard) ;
-  crash worker Turbopack possible en *dev* sur routes DB → vérifier en **prod**.
+- **28/09/2026 — dépôt GitHub PUBLIC et suppression complète de Next** :
+  https://github.com/fortune344/Digi-Farm, branche `django` par défaut (`master` reste local).
+  Parité vérifiée (les 13 pages Next ont toutes leur équivalent Django, plus onze pages en plus),
+  donc `src/`, `drizzle/`, `public/`, les configs TS/Biome/Vitest et les scripts `.cjs` sont
+  **supprimés**. `package.json` réduit à la chaîne Tailwind + `pnpm icones`. Les 26 photos du
+  catalogue sont **versionnées** dans `core/fixtures/photos/` (1,8 Mo, noms lisibles) : un clone
+  neuf affiche un catalogue illustré sans réseau. Avant de pousser : vérifier l'historique entier,
+  pas seulement l'état courant (aucun `.env`, aucune base, aucun jeton n'a jamais été commité).
+- **28/09/2026 — accueil repensée + mobilier de site** : motif « marketplace » (héros de
+  **recherche** > catégories illustrées > arrivages > confiance > appel aux vendeurs).
+  Nouvelles pages : à propos, contact (messages **en base** + admin, pot de miel anti-robot),
+  FAQ (accordéon `<details>`, ancres), conditions, confidentialité, 404, 500. En-tête avec menu
+  mobile et pied de page à quatre colonnes — tout en `<details>`, **zéro JavaScript**.
+  **Pas de faux témoignages** : rien n'est inventé, les chiffres viennent de la base.
+  Images recompressées aux tailles réellement affichées (539 Ko pour tout le site).
+  Pages légales = **brouillons** portant un avertissement visible, à faire relire par un juriste.
+- **27/09/2026 — passage à Django** : **auth Django native + `Profil`** (rôle en base, jamais
+  côté client) ; **HTMX** pour le peu d'interactivité (pas d'Alpine, pas de build JS) ;
+  re-seed à neuf (`seed_demo`) plutôt que migration de l'ancienne base.
+  Palette OKLCH et Fraunces conservées ; corps de texte en pile système (économie de données).
+  **Classes de composants CSS** (`.bouton primaire`, `.carte`, `.badge succes`, `.champ`) définies
+  dans `static/src/input.css` : gabarits lisibles, pas de soupe d'utilitaires.
+  **Admin Django** = base de la Phase 8 (litiges), paiements et journal en **lecture seule**.
+  **Tableau de bord vendeur** : tuiles bento (à traiter / sous séquestre / encaissé), file d'action
+  avec le bouton de progression *dans* la ligne, inventaire avec alertes de stock.
+- **Agrégateur de paiement** : toujours **SIMULÉ** (`commandes/agregateur.py`, `AgregateurSimule`),
+  faute de compte marchand. Brancher CinetPay/FedaPay/Hub2 = une classe respectant le protocole
+  `Agregateur` + le vrai schéma de signature dans `signer()`/`signature_valide()`.
+  Secret : `PAYMENT_WEBHOOK_SECRET` (repli de développement si absent).
+- **Pièges rencontrés, à ne pas réapprendre** :
+  `{# … #}` ne tient que sur **UNE ligne** en Django — un commentaire multi-ligne s'affiche dans
+  la page ; `core/tests/test_gabarits.py` le verrouille désormais.
+  Django met les gabarits **en cache même en DEBUG** : sans l'auto-rechargement (`--noreload`),
+  une correction de gabarit n'apparaît pas. `pkill` depuis Git Bash ne tue pas un processus
+  Windows — passer par PowerShell (`Get-NetTCPConnection` + `Stop-Process`).
+  Deux serveurs peuvent écouter le même port sur Windows et brouiller les vérifications.
+
+## Reste à faire
+- Arbitrage des litiges par l'administrateur (ex-Phase 8)
+- Avis et notes des vendeurs (jamais implémentés, `note_moyenne` est un champ en attente)
+- Réinitialisation de mot de passe par e-mail (la FAQ dit aujourd'hui de nous contacter)
+- Brancher un vrai agrégateur de paiement
+- Déploiement (VPS + nginx ; penser à `collectstatic` et à servir `media/`)

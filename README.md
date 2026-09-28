@@ -41,7 +41,7 @@ garanties.
 - **HTMX** pour le peu d'interactivité nécessaire — pas de framework JS, pas de build côté client
 - **SQLite** (WAL, contraintes de clés étrangères actives)
 - **Pillow** — compression des photos en WebP à l'upload
-- **pytest + pytest-django** — 90 tests
+- **pytest + pytest-django** — 113 tests
 
 Le rendu est entièrement serveur et l'interface n'embarque qu'un seul fichier
 JavaScript de 14 Ko : c'est un choix, pas un manque. Sur une connexion lente,
@@ -52,7 +52,7 @@ une page qui s'affiche tout de suite vaut mieux qu'une application qui s'hydrate
 ```bash
 # dépendances
 python -m pip install -r digifarm/requirements.txt
-pnpm install                 # pour la chaîne Tailwind uniquement
+pnpm install                 # uniquement la chaîne Tailwind (aucun JS applicatif)
 
 # feuille de style (le CSS compilé n'est pas versionné)
 pnpm css:build
@@ -110,9 +110,9 @@ Deux limites à connaître :
 - **Reste à faire** : arbitrage des litiges par l'administrateur, avis et notes
   des vendeurs, déploiement.
 
-Le dossier `src/` à la racine contient une **première version en Next.js**,
-conservée gelée comme référence le temps d'atteindre la parité, puis destinée à
-être supprimée. Ne pas s'y fier : le code vivant est dans `digifarm/`.
+Une première version avait été écrite en Next.js. Elle a été entièrement
+réécrite en Django et retirée du dépôt une fois la parité atteinte ; son
+histoire reste consultable dans les commits.
 
 ## Tests
 

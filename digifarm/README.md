@@ -1,8 +1,8 @@
 # Digi-Farm — version Django
 
-Réécriture de l'application en **Django 5.2 LTS + Tailwind 4 + HTMX**, en
-remplacement de la version Next.js (conservée à la racine du dépôt comme
-référence le temps d'atteindre la parité, puis supprimée).
+L'application, en **Django 5.2 LTS + Tailwind 4 + HTMX**. Elle remplace une
+première version écrite en Next.js, retirée du dépôt une fois la parité
+atteinte.
 
 ## Démarrer
 
@@ -126,6 +126,8 @@ Le reste du code n'a pas à changer : il ne connaît que cette fonction.
   télécharger.
 - Les photos d'annonces vont dans `<dépôt>/media/` (hors du dossier `digifarm/`),
   servies par Django en développement. En production, c'est au serveur web
-  (nginx) de les servir.
+  (nginx) de les servir. Les photos de démonstration, elles, sont versionnées
+  dans `core/fixtures/photos/` : un clone tout neuf affiche un catalogue
+  illustré sans rien télécharger.
 - Les icônes viennent de lucide : `pnpm icones` régénère `core/icones.py` après
   avoir ajouté un nom dans `scripts/extraire-icones.mjs`.

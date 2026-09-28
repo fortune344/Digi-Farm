@@ -35,9 +35,7 @@
       "unite": "kg",
       "quantite_dispo": 39970.0,
       "region": "Maritime",
-      "photos": [
-        "uploads/listings/f9e39591-a3eb-432a-8516-c35df08fa148/99e8c15a-c7d5-4671-bff6-bbf85e8c9252.webp"
-      ]
+      "photo": "tomates-fraiches.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -48,9 +46,7 @@
       "unite": "sac",
       "quantite_dispo": 50.0,
       "region": "Kara",
-      "photos": [
-        "uploads/listings/bb429c9f-f445-4ecb-9d05-b28e5c93a92f/65b3a3ba-9ee8-4edc-98c7-ef79ee999e90.webp"
-      ]
+      "photo": "mais-jaune-en-sac.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -61,9 +57,7 @@
       "unite": "sac",
       "quantite_dispo": 30.0,
       "region": "Savanes",
-      "photos": [
-        "uploads/listings/6bd85af2-0304-4c9b-aeb5-4671c922a905/d4f764af-2bd5-461c-a229-6dcd099e60c1.webp"
-      ]
+      "photo": "riz-local-decortique.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -74,9 +68,7 @@
       "unite": "sac",
       "quantite_dispo": 25.0,
       "region": "Savanes",
-      "photos": [
-        "uploads/listings/76d8ffc8-1aa1-42d8-9bc0-af36a293e084/83bba907-5612-4370-be9e-05a0ef351352.webp"
-      ]
+      "photo": "mil-rouge.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -87,9 +79,7 @@
       "unite": "tonne",
       "quantite_dispo": 8.0,
       "region": "Centrale",
-      "photos": [
-        "uploads/listings/98d4417a-b182-40fe-bd09-6d805521adb0/48c702ce-84a2-4862-b920-0a64a85a61f8.webp"
-      ]
+      "photo": "sorgho-blanc.webp"
     },
     {
       "vendeur": "demo.adjo@digifarm.test",
@@ -100,9 +90,7 @@
       "unite": "kg",
       "quantite_dispo": 120.0,
       "region": "Maritime",
-      "photos": [
-        "uploads/listings/44c5ae4a-479e-4614-8a51-7e4b9d5d1ade/7389a7d5-0ef0-4f7d-b9e6-97dfeac015fb.webp"
-      ]
+      "photo": "tomates-fraiches-legumes.webp"
     },
     {
       "vendeur": "demo.adjo@digifarm.test",
@@ -113,9 +101,7 @@
       "unite": "kg",
       "quantite_dispo": 60.0,
       "region": "Maritime",
-      "photos": [
-        "uploads/listings/ed89536e-e13b-4442-8710-9012430bfe6a/28a3d0ac-af19-40f3-bf94-81456702d68f.webp"
-      ]
+      "photo": "piment-frais.webp"
     },
     {
       "vendeur": "demo.kpalime@digifarm.test",
@@ -126,9 +112,7 @@
       "unite": "kg",
       "quantite_dispo": 80.0,
       "region": "Plateaux",
-      "photos": [
-        "uploads/listings/6ab4ac3e-dc95-411b-bc2f-21f9c29a609c/e575593f-eeb3-4ce7-84f4-20d3fd751beb.webp"
-      ]
+      "photo": "gombo-frais.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -139,9 +123,7 @@
       "unite": "kg",
       "quantite_dispo": 200.0,
       "region": "Savanes",
-      "photos": [
-        "uploads/listings/9ad3cad0-b9c0-4b7b-abcd-e38cf8596ca3/f1f22da9-e5b4-4064-abb6-7e2071c7450e.webp"
-      ]
+      "photo": "oignons-rouges.webp"
     },
     {
       "vendeur": "demo.kpalime@digifarm.test",
@@ -152,9 +134,7 @@
       "unite": "kg",
       "quantite_dispo": 90.0,
       "region": "Plateaux",
-      "photos": [
-        "uploads/listings/d3c43a3c-a459-4894-9ef6-09341a68316a/402b6d6a-31ba-418b-b467-2d7999fd86a8.webp"
-      ]
+      "photo": "carottes.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -165,9 +145,7 @@
       "unite": "kg",
       "quantite_dispo": 300.0,
       "region": "Centrale",
-      "photos": [
-        "uploads/listings/f807c922-dcba-448b-a2fc-72f2f0f735c2/7f3b7fdc-10b6-494c-86d2-4ffda08701c0.webp"
-      ]
+      "photo": "igname-laboko.webp"
     },
     {
       "vendeur": "demo.kpalime@digifarm.test",
@@ -178,9 +156,7 @@
       "unite": "kg",
       "quantite_dispo": 400.0,
       "region": "Plateaux",
-      "photos": [
-        "uploads/listings/429958fa-e156-468d-8bfb-ba1340dc03e7/36887e14-e0cc-49be-83af-f89bc6b44804.webp"
-      ]
+      "photo": "manioc-frais.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -191,9 +167,7 @@
       "unite": "kg",
       "quantite_dispo": 150.0,
       "region": "Kara",
-      "photos": [
-        "uploads/listings/5789049a-e16c-4fdd-bcfe-214bf1f4f720/64d3bdb0-b7f8-4d1f-996c-425f5fa1a441.webp"
-      ]
+      "photo": "patate-douce.webp"
     },
     {
       "vendeur": "demo.kpalime@digifarm.test",
@@ -204,9 +178,7 @@
       "unite": "kg",
       "quantite_dispo": 70.0,
       "region": "Plateaux",
-      "photos": [
-        "uploads/listings/a394148a-ad69-42c1-9bbd-a35b7a502b67/c202074a-5b81-4a00-8a16-ccb0d6955fe5.webp"
-      ]
+      "photo": "taro.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -217,9 +189,7 @@
       "unite": "sac",
       "quantite_dispo": 35.0,
       "region": "Savanes",
-      "photos": [
-        "uploads/listings/5bba7014-52e5-41b4-af51-53b9cd7e0d45/4538d1d7-9cad-41f8-ab25-68e4dc4996fc.webp"
-      ]
+      "photo": "haricot-niebe.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -230,9 +200,7 @@
       "unite": "sac",
       "quantite_dispo": 40.0,
       "region": "Kara",
-      "photos": [
-        "uploads/listings/efeb6bef-4bfe-4719-b857-9c1fb864f86e/fd5c717a-1cc2-485c-b562-448941e72ef2.webp"
-      ]
+      "photo": "arachides-en-coque.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -243,9 +211,7 @@
       "unite": "sac",
       "quantite_dispo": 80.0,
       "region": "Centrale",
-      "photos": [
-        "uploads/listings/a2bc4fd7-0206-4fbd-ac50-bce5afcde06d/13ddbcc2-6ac8-41cd-ab53-a17aa72e2b45.webp"
-      ]
+      "photo": "soja.webp"
     },
     {
       "vendeur": "demo.kpalime@digifarm.test",
@@ -256,9 +222,7 @@
       "unite": "kg",
       "quantite_dispo": 250.0,
       "region": "Plateaux",
-      "photos": [
-        "uploads/listings/ba9addc5-da04-4c85-b82b-40204210b283/a3e530cf-8712-45e7-a892-b1ae9dfb973a.webp"
-      ]
+      "photo": "ananas-pain-de-sucre.webp"
     },
     {
       "vendeur": "demo.kpalime@digifarm.test",
@@ -269,9 +233,7 @@
       "unite": "kg",
       "quantite_dispo": 180.0,
       "region": "Plateaux",
-      "photos": [
-        "uploads/listings/a6b64442-7eed-4774-b5d3-5eab5c6a656d/e08aa551-b09a-4c77-a0ff-5dc18be6ca56.webp"
-      ]
+      "photo": "bananes-douces.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -282,9 +244,7 @@
       "unite": "kg",
       "quantite_dispo": 140.0,
       "region": "Centrale",
-      "photos": [
-        "uploads/listings/7b9f77e1-854c-4f17-9fc2-5e8c0b4b23cd/6799d576-4c6f-4596-92f1-3eb08fde3de6.webp"
-      ]
+      "photo": "mangues-mures.webp"
     },
     {
       "vendeur": "demo.kpalime@digifarm.test",
@@ -295,9 +255,7 @@
       "unite": "kg",
       "quantite_dispo": 220.0,
       "region": "Plateaux",
-      "photos": [
-        "uploads/listings/f5b0205a-bda8-405d-96b3-f895f6474df5/32768c46-715b-407a-be3f-6ab6575f2c64.webp"
-      ]
+      "photo": "oranges-juteuses.webp"
     },
     {
       "vendeur": "demo.adjo@digifarm.test",
@@ -308,9 +266,7 @@
       "unite": "sac",
       "quantite_dispo": 60.0,
       "region": "Maritime",
-      "photos": [
-        "uploads/listings/c7f145a0-2530-4550-95f4-7501c85ea9fd/90cdcbaa-db95-4b3b-ac6f-c24a0a77a79d.webp"
-      ]
+      "photo": "noix-de-palme.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -321,9 +277,7 @@
       "unite": "kg",
       "quantite_dispo": 60.0,
       "region": "Savanes",
-      "photos": [
-        "uploads/listings/bfec888c-7095-48b3-8ade-a97363d7a535/6650b885-3f3a-4931-8f6f-60e3b2e72879.webp"
-      ]
+      "photo": "sesame-blanc.webp"
     },
     {
       "vendeur": "demo.kpalime@digifarm.test",
@@ -334,9 +288,7 @@
       "unite": "kg",
       "quantite_dispo": 40.0,
       "region": "Plateaux",
-      "photos": [
-        "uploads/listings/1f368321-8492-446c-84c7-6c5e1e779641/335c8ff5-8f8d-4c27-aa68-b902bd8c2981.webp"
-      ]
+      "photo": "gingembre-frais.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -347,9 +299,7 @@
       "unite": "kg",
       "quantite_dispo": 30.0,
       "region": "Savanes",
-      "photos": [
-        "uploads/listings/7ea74b3f-b3ad-437a-861e-90e2f0c30ffb/ab90e0ea-c082-4b9e-b4b5-641199aa1055.webp"
-      ]
+      "photo": "ail-local.webp"
     },
     {
       "vendeur": "demo.kara@digifarm.test",
@@ -360,9 +310,7 @@
       "unite": "kg",
       "quantite_dispo": 25.0,
       "region": "Kara",
-      "photos": [
-        "uploads/listings/67c8a026-07d5-49f2-a2ad-a177d17f1fac/cb397158-11a4-4329-81a7-a46755008180.webp"
-      ]
+      "photo": "miel-naturel.webp"
     }
   ]
 }

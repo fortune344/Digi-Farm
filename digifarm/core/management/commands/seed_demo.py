@@ -29,6 +29,9 @@ from commandes.models import Commande
 from comptes.models import Profil
 from core import metier
 
+DOSSIER_FIXTURES = Path(__file__).resolve().parents[2] / "fixtures"
+DOSSIER_PHOTOS = DOSSIER_FIXTURES / "photos"
+
 MOT_DE_PASSE_DEMO = "digifarm2026"
 
 ACHETEURS = [
@@ -68,7 +71,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        fixture = Path(__file__).resolve().parents[2] / "fixtures" / "catalogue_demo.json"
+        fixture = DOSSIER_FIXTURES / "catalogue_demo.json"
         if not fixture.is_file():
             raise CommandError(f"Catalogue introuvable : {fixture}")
 
@@ -164,28 +167,32 @@ class Command(BaseCommand):
             )
             annonces.append(annonce)
             if cree:
-                self._copier_photos(annonce, produit.get("photos") or [])
+                self._copier_photo(annonce, produit.get("photo") or "")
         self.stdout.write(f"{len(annonces)} annonce(s) en place.")
         return annonces
 
-    def _copier_photos(self, annonce: Annonce, chemins: list) -> None:
-        """Réutilise les photos déjà téléchargées par l'ancien seed.
+    def _copier_photo(self, annonce: Annonce, nom_fichier: str) -> None:
+        """Installe la photo du catalogue dans le dossier media/ de l'annonce.
 
-        Les fichiers vivent dans public/uploads/ ; on les recopie dans le dossier
-        media/ de Django plutôt que de les retélécharger depuis Wikimedia.
+        Les images sont versionnées avec le projet (core/fixtures/photos/) :
+        un clone tout neuf affiche donc un vrai catalogue illustré, sans avoir
+        besoin du réseau. Ce sont des photos de Wikimedia Commons, libres de
+        réutilisation.
         """
-        racine_ancienne = Path(settings.REPO_DIR) / "public"
-        for index, chemin in enumerate(chemins[: metier.MAX_PHOTOS]):
-            source = racine_ancienne / chemin
-            if not source.is_file():
-                continue
-            destination_relative = f"annonces/{annonce.pk}/{source.name}"
-            destination = Path(settings.MEDIA_ROOT) / destination_relative
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, destination)
-            Photo.objects.create(
-                annonce=annonce, image=destination_relative, ordre=index
+        if not nom_fichier:
+            return
+        source = DOSSIER_PHOTOS / nom_fichier
+        if not source.is_file():
+            self.stdout.write(
+                self.style.WARNING(f"  photo introuvable, ignorée : {nom_fichier}")
             )
+            return
+
+        destination_relative = f"annonces/{annonce.pk}/{nom_fichier}"
+        destination = Path(settings.MEDIA_ROOT) / destination_relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+        Photo.objects.create(annonce=annonce, image=destination_relative, ordre=0)
 
     def _creer_commandes(self, annonces: list, acheteurs: list) -> None:
         """Crée une commande dans chaque état du parcours, pour que les tableaux
